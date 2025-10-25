@@ -1,0 +1,4 @@
+/* Smooth table height transition */
+table {
+  transition: all 0.4s ease-in-out;
+}

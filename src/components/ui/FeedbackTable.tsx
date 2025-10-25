@@ -1,388 +1,373 @@
-import React, { useState } from "react";
-import Select from "react-select";
-import { feedbackData } from "../../data/feedback";
+import React, { useState, useEffect, useRef } from "react";
+import Select, { type MultiValue } from "react-select";
+import { type Feedback } from "../../data/feedback";
 
-const FeedbackTable: React.FC = () => {
-  const [filters, setFilters] = useState({
-    dates: [] as { type: "before" | "after" | "at"; value: string }[],
-    employees: [] as string[],
-    scores: [] as number[],
-    notes: [] as string[],
-  });
+type DateFilterMode = "before" | "after" | "at";
 
-  const [activeFilters, setActiveFilters] = useState<typeof filters>({
-    dates: [],
-    employees: [],
-    scores: [],
-    notes: [],
-  });
+type Filter =
+  | { type: "date"; mode: DateFilterMode; value: { date: Date } }
+  | { type: "employee" | "score" | "notes"; value: string };
 
-  const [showDateModal, setShowDateModal] = useState(false);
-  const [dateType, setDateType] = useState<"before" | "after" | "at">("at");
-  const [dateValue, setDateValue] = useState("");
+interface FeedbackTableProps {
+  feedbacks: Feedback[];
+  accentColor?: string;
+}
+
+const FeedbackTable: React.FC<FeedbackTableProps> = ({
+  feedbacks,
+  accentColor = "#007bff",
+}) => {
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [filteredFeedback, setFilteredFeedback] =
+    useState<Feedback[]>(feedbacks);
+
+  const [dateMode, setDateMode] = useState<DateFilterMode>("at");
+  const [dateValue, setDateValue] = useState<string>("");
+  const [employeeNames, setEmployeeNames] = useState<string[]>([]);
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const [selectedScores, setSelectedScores] = useState<number[]>([]);
+  const [noteKeywords, setNoteKeywords] = useState<string[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
+  const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
+  const dateMenuRef = useRef<HTMLDivElement>(null);
 
-  const uniqueEmployees = Array.from(
-    new Set(feedbackData.map((f) => f.employeeName))
-  );
-  const scoreOptions = [1, 2, 3, 4, 5];
+  // Collect all unique employee names
+  useEffect(() => {
+    setEmployeeNames(Array.from(new Set(feedbacks.map((f) => f.employeeName))));
+  }, [feedbacks]);
 
+  // Close date menu when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dateMenuRef.current &&
+        !dateMenuRef.current.contains(e.target as Node)
+      ) {
+        setIsDateMenuOpen(false);
+      }
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsDateMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, []);
+
+  // Apply filters
   const handleApplyFilters = () => {
-    setActiveFilters(filters);
-    setCurrentPage(1);
+    const newFilters: Filter[] = [];
+
+    if (dateValue) {
+      newFilters.push({
+        type: "date",
+        mode: dateMode,
+        value: { date: new Date(dateValue) },
+      });
+    }
+
+    selectedEmployees.forEach((emp) =>
+      newFilters.push({ type: "employee", value: emp })
+    );
+
+    selectedScores.forEach((score) =>
+      newFilters.push({ type: "score", value: score.toString() })
+    );
+
+    noteKeywords.forEach((note) =>
+      newFilters.push({ type: "notes", value: note })
+    );
+
+    setFilters(newFilters);
   };
 
   const handleResetFilters = () => {
-    setFilters({ dates: [], employees: [], scores: [], notes: [] });
-    setActiveFilters({ dates: [], employees: [], scores: [], notes: [] });
-    setCurrentPage(1);
-  };
-
-  const removeActiveFilter = (
-    type: keyof typeof filters,
-    value?: unknown,
-    extra?: string
-  ) => {
-    setActiveFilters((prev) => {
-      const newFilters = { ...prev };
-      if (type === "dates") {
-        newFilters.dates = prev.dates.filter(
-          (d) => !(d.value === value && d.type === extra)
-        );
-      } else if (type === "employees") {
-        newFilters.employees = prev.employees.filter((e) => e !== value);
-      } else if (type === "scores") {
-        newFilters.scores = prev.scores.filter((s) => s !== value);
-      } else if (type === "notes") {
-        newFilters.notes = prev.notes.filter((n) => n !== value);
-      }
-      return newFilters;
-    });
-  };
-
-  const filteredFeedback = feedbackData.filter((feedback) => {
-    const { dates, employees, scores, notes } = activeFilters;
-
-    const dateMatch = dates.every((d) => {
-      const feedbackDate = new Date(feedback.date);
-      const filterDate = new Date(d.value);
-      if (d.type === "before") return feedbackDate < filterDate;
-      if (d.type === "after") return feedbackDate > filterDate;
-      if (d.type === "at")
-        return feedbackDate.toISOString().slice(0, 10) === d.value;
-      return true;
-    });
-
-    const employeeMatch =
-      employees.length === 0 || employees.includes(feedback.employeeName);
-    const scoreMatch = scores.length === 0 || scores.includes(feedback.score);
-    const notesMatch =
-      notes.length === 0 ||
-      notes.every((kw) =>
-        feedback.notes.toLowerCase().includes(kw.toLowerCase())
-      );
-
-    return dateMatch && employeeMatch && scoreMatch && notesMatch;
-  });
-
-  const totalPages = Math.ceil(filteredFeedback.length / itemsPerPage);
-  const currentItems = filteredFeedback.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Fill empty rows to preserve height
-  const filledItems = [
-    ...currentItems,
-    ...Array.from({ length: itemsPerPage - currentItems.length }).map(
-      () => null
-    ),
-  ];
-
-  const accentColors = {
-    date: "bg-blue-100 text-blue-800 border-blue-300",
-    employee: "bg-green-100 text-green-800 border-green-300",
-    score: "bg-orange-100 text-orange-800 border-orange-300",
-    notes: "bg-purple-100 text-purple-800 border-purple-300",
-  };
-
-  const openDateModal = () => {
+    setFilters([]);
+    setSelectedEmployees([]);
+    setSelectedScores([]);
+    setNoteKeywords([]);
     setDateValue("");
-    setDateType("at");
-    setShowDateModal(true);
+    setDateMode("before");
   };
 
-  const addDateFilter = () => {
-    if (dateValue)
-      setFilters((prev) => ({
-        ...prev,
-        dates: [...prev.dates, { type: dateType, value: dateValue }],
-      }));
-    setShowDateModal(false);
+  // Filtering logic
+  useEffect(() => {
+    let result = [...feedbacks];
+
+    if (filters.length > 0) {
+      result = result.filter((f) => {
+        return filters.every((filter) => {
+          switch (filter.type) {
+            case "date": {
+              const fd = new Date(f.date);
+              const fv = filter.value.date;
+              if (filter.mode === "before") return fd < fv;
+              if (filter.mode === "after") return fd > fv;
+              return fd.toDateString() === fv.toDateString();
+            }
+            case "employee":
+              return selectedEmployees.length === 0
+                ? true
+                : selectedEmployees.includes(f.employeeName);
+            case "score":
+              return selectedScores.length === 0
+                ? true
+                : selectedScores.includes(f.score);
+            case "notes":
+              return f.notes.toLowerCase().includes(filter.value.toLowerCase());
+            default:
+              return true;
+          }
+        });
+      });
+    }
+
+    // Maintain table height
+    if (result.length < itemsPerPage) {
+      const diff = itemsPerPage - result.length;
+      const emptyRows = Array(diff).fill({
+        id: -1,
+        date: "",
+        employee: "",
+        score: 0,
+        notes: "",
+      });
+      result = [...result, ...emptyRows];
+    }
+
+    setFilteredFeedback(result);
+  }, [filters, feedbacks, selectedEmployees, selectedScores]);
+
+  const handleNoteKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const target = e.target as HTMLInputElement | null;
+      if (target && target.value.trim()) {
+        setNoteKeywords((prev) => [...prev, target.value.trim()]);
+        target.value = "";
+      }
+    }
   };
+
+  // Pagination
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentFeedback = filteredFeedback.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(feedbacks.length / itemsPerPage);
 
   return (
-    <div className="bg-soft-gray p-4 rounded-lg shadow text-charcoal space-y-4 relative">
-      <h2 className="text-lg font-bold">Feedback Table</h2>
-
-      {/* Filters Section */}
-      <div className="space-y-3">
-        <p className="font-semibold">Filters</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 items-center">
-          {/* Date Filter */}
+    <div className="p-4">
+      {/* Filters Row */}
+      <div className="flex flex-wrap gap-2 mb-3">
+        {/* Date Filter */}
+        <div className="relative" ref={dateMenuRef}>
           <button
-            onClick={openDateModal}
-            className="border border-blue-400 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-50"
+            onClick={() => setIsDateMenuOpen(!isDateMenuOpen)}
+            className="px-3 py-1.5 border rounded-md"
+            style={{ borderColor: accentColor }}
           >
-            Add Date Filter
+            {dateValue
+              ? `${dateMode[0].toUpperCase() + dateMode.slice(1)} ${dateValue}`
+              : "Date Filter"}
           </button>
 
-          {/* Employee Filter */}
-          <Select
-            isMulti
-            placeholder="Employee Name"
-            options={uniqueEmployees.map((e) => ({ value: e, label: e }))}
-            value={filters.employees.map((e) => ({ value: e, label: e }))}
-            onChange={(selected) =>
-              setFilters({
-                ...filters,
-                employees: selected.map((s) => s.value),
-              })
-            }
-            styles={{
-              control: (base) => ({
-                ...base,
-                borderColor: "#2B6CB0",
-                boxShadow: "none",
-              }),
-              multiValue: (base) => ({
-                ...base,
-                backgroundColor: "#E3F2FD",
-              }),
-              multiValueLabel: (base) => ({
-                ...base,
-                color: "#2B6CB0",
-              }),
-            }}
-          />
-
-          {/* Score Filter */}
-          <Select
-            isMulti
-            placeholder="Score"
-            options={scoreOptions.map((s) => ({ value: s, label: `${s}` }))}
-            value={filters.scores.map((s) => ({ value: s, label: `${s}` }))}
-            onChange={(selected) =>
-              setFilters({
-                ...filters,
-                scores: selected.map((s) => s.value),
-              })
-            }
-            styles={{
-              control: (base) => ({
-                ...base,
-                borderColor: "#DD6B20",
-                boxShadow: "none",
-              }),
-              multiValue: (base) => ({
-                ...base,
-                backgroundColor: "#FFF7ED",
-              }),
-              multiValueLabel: (base) => ({
-                ...base,
-                color: "#DD6B20",
-              }),
-            }}
-          />
-
-          {/* Notes Filter */}
-          <input
-            type="text"
-            placeholder='Notes keyword e.g. "teamwork"'
-            className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.currentTarget.value.trim() !== "") {
-                setFilters((prev) => ({
-                  ...prev,
-                  notes: [...prev.notes, e.currentTarget.value.trim()],
-                }));
-                e.currentTarget.value = "";
-              }
-            }}
-          />
-        </div>
-
-        <div className="flex space-x-2">
-          <button
-            onClick={handleApplyFilters}
-            className="bg-brand-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Apply Filters
-          </button>
-        </div>
-      </div>
-
-      {/* Active Filters Section */}
-      <div>
-        <div className="flex items-center mb-2 space-x-2">
-          <span className="font-semibold">Active Filters:</span>
-          <button
-            onClick={handleResetFilters}
-            className="text-red-600 font-semibold hover:underline"
-          >
-            Reset
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {activeFilters.dates.map((d, i) => (
-            <span
-              key={`date-${i}`}
-              className={`px-3 py-1 rounded-full border text-sm ${accentColors.date} flex items-center gap-2`}
+          {isDateMenuOpen && (
+            <div
+              className="absolute bg-white border rounded-md shadow-md p-2 mt-2 fade-in"
+              style={{ minWidth: "200px", zIndex: 50 }}
             >
-              {`${d.type.charAt(0).toUpperCase() + d.type.slice(1)} ${d.value}`}
-              <button
-                onClick={() => removeActiveFilter("dates", d.value, d.type)}
+              <select
+                value={dateMode}
+                onChange={(e) => setDateMode(e.target.value as DateFilterMode)}
+                className="border rounded p-1 w-full mb-2"
               >
-                ✕
-              </button>
-            </span>
-          ))}
-          {activeFilters.employees.map((e, i) => (
-            <span
-              key={`emp-${i}`}
-              className={`px-3 py-1 rounded-full border text-sm ${accentColors.employee} flex items-center gap-2`}
-            >
-              {e}
-              <button onClick={() => removeActiveFilter("employees", e)}>
-                ✕
-              </button>
-            </span>
-          ))}
-          {activeFilters.scores.map((s, i) => (
-            <span
-              key={`score-${i}`}
-              className={`px-3 py-1 rounded-full border text-sm ${accentColors.score} flex items-center gap-2`}
-            >
-              {`${s} star${s > 1 ? "s" : ""}`}
-              <button onClick={() => removeActiveFilter("scores", s)}>✕</button>
-            </span>
-          ))}
-          {activeFilters.notes.map((n, i) => (
-            <span
-              key={`note-${i}`}
-              className={`px-3 py-1 rounded-full border text-sm ${accentColors.notes} flex items-center gap-2`}
-            >
-              “{n}”
-              <button onClick={() => removeActiveFilter("notes", n)}>✕</button>
-            </span>
-          ))}
+                <option value="at">At</option>
+                <option value="before">Before</option>
+                <option value="after">After</option>
+              </select>
+              <input
+                type="date"
+                value={dateValue}
+                onChange={(e) => setDateValue(e.target.value)}
+                className="border rounded p-1 w-full"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Employee Filter */}
+        <div className="flex-1 min-w-[180px]">
+          <Select
+            placeholder="Employee Name"
+            isMulti
+            options={employeeNames.map((name) => ({
+              value: name,
+              label: name,
+            }))}
+            value={selectedEmployees.map((e) => ({ value: e, label: e }))}
+            onChange={(
+              selected: MultiValue<{ value: string; label: string }>
+            ) => setSelectedEmployees(selected.map((s) => s.value))}
+            styles={{
+              control: (base) => ({ ...base, borderColor: accentColor }),
+              multiValue: (base) => ({
+                ...base,
+                backgroundColor: `${accentColor}22`,
+              }),
+            }}
+          />
+        </div>
+
+        {/* Score Filter */}
+        <div className="flex-1 min-w-[180px]">
+          <Select
+            placeholder="Score"
+            isMulti
+            options={[1, 2, 3, 4, 5].map((s) => ({
+              value: s,
+              label: `${s} star${s > 1 ? "s" : ""}`,
+            }))}
+            value={selectedScores.map((s) => ({
+              value: s,
+              label: `${s} star${s > 1 ? "s" : ""}`,
+            }))}
+            onChange={(
+              selected: MultiValue<{ value: number; label: string }>
+            ) => setSelectedScores(selected.map((s) => s.value))}
+            styles={{
+              control: (base) => ({ ...base, borderColor: accentColor }),
+              multiValue: (base) => ({
+                ...base,
+                backgroundColor: `${accentColor}22`,
+              }),
+            }}
+          />
+        </div>
+
+        {/* Notes Filter */}
+        <input
+          type="text"
+          placeholder="Notes keyword"
+          onKeyDown={handleNoteKeyPress}
+          className="border rounded-md px-2 py-1 flex-1"
+          style={{ borderColor: accentColor }}
+        />
+      </div>
+
+      {/* Apply + Reset + Active Filters */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <button
+          onClick={handleApplyFilters}
+          className="px-3 py-1.5 rounded-md text-white"
+          style={{ backgroundColor: accentColor }}
+        >
+          Apply Filters
+        </button>
+        <button
+          onClick={handleResetFilters}
+          className="px-3 py-1.5 rounded-md text-white bg-red-500 disabled:opacity-50"
+          disabled={filters.length === 0}
+        >
+          Reset
+        </button>
+
+        <div className="flex flex-wrap gap-2">
+          {filters.map((filter, idx) => {
+            let label = "";
+            let color = accentColor;
+
+            if (filter.type === "date") {
+              label = `${filter.mode[0].toUpperCase() + filter.mode.slice(1)} ${
+                filter.value.date.toISOString().split("T")[0]
+              }`;
+              color = "#60a5fa";
+            } else if (filter.type === "employee") {
+              label = filter.value;
+              color = "#34d399";
+            } else if (filter.type === "score") {
+              label = `${filter.value} star${filter.value !== "1" ? "s" : ""}`;
+              color = "#fb923c";
+            } else if (filter.type === "notes") {
+              label = `"${filter.value}"`;
+              color = "#a855f7";
+            }
+
+            return (
+              <div
+                key={idx}
+                className="flex items-center px-2 py-1 rounded-full text-sm text-white"
+                style={{ backgroundColor: color }}
+              >
+                {label}
+                <button
+                  onClick={() =>
+                    setFilters(filters.filter((_, i) => i !== idx))
+                  }
+                  className="ml-1 text-white hover:text-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Feedback Table */}
-      <table className="w-full">
-        <thead>
-          <tr className="text-left border-b">
-            <th className="pb-2">Date</th>
-            <th className="pb-2">Employee Name</th>
-            <th className="pb-2">Score</th>
-            <th className="pb-2">Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filledItems.map((feedback, i) =>
-            feedback ? (
-              <tr key={feedback.id} className="border-t">
-                <td className="py-2">
-                  {new Date(feedback.date).toISOString().slice(0, 10)}
+      {/* Table */}
+      <div className="overflow-x-auto border rounded-lg transition-all duration-300 ease-in-out">
+        <table className="min-w-full text-left border-collapse">
+          <thead style={{ backgroundColor: `${accentColor}22` }}>
+            <tr>
+              <th className="p-2">Date</th>
+              <th className="p-2">Employee</th>
+              <th className="p-2">Score</th>
+              <th className="p-2">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentFeedback.map((f) => (
+              <tr key={+f.id !== -1 ? f.id : Math.random()}>
+                <td className="p-2 border-t">
+                  {f.date ? new Date(f.date).toISOString().split("T")[0] : ""}
                 </td>
-                <td className="py-2">{feedback.employeeName}</td>
-                <td className="py-2">{feedback.score}</td>
-                <td className="py-2">{feedback.notes}</td>
+                <td className="p-2 border-t">{f.employeeName}</td>
+                <td className="p-2 border-t">{f.score || ""}</td>
+                <td className="p-2 border-t">{f.notes}</td>
               </tr>
-            ) : (
-              <tr key={`empty-${i}`} className="border-t h-[48px]">
-                <td colSpan={4}></td>
-              </tr>
-            )
-          )}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-          className="bg-brand-blue text-white px-3 py-1 rounded-l-lg disabled:opacity-50 mr-2"
-        >
-          Previous
-        </button>
+      <div className="flex justify-center mt-3 gap-2">
         {Array.from({ length: totalPages }, (_, i) => (
           <button
-            key={i + 1}
+            key={i}
             onClick={() => setCurrentPage(i + 1)}
-            className={`px-3 py-1 border-t border-b ${
-              currentPage === i + 1
-                ? "bg-light-blue text-white"
-                : "bg-soft-gray text-charcoal"
-            } mx-1`}
+            className={`px-2 py-1 rounded ${
+              currentPage === i + 1 ? "bg-gray-300" : "bg-gray-100"
+            }`}
           >
             {i + 1}
           </button>
         ))}
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-          className="bg-brand-blue text-white px-3 py-1 rounded-r-lg disabled:opacity-50 ml-2"
-        >
-          Next
-        </button>
       </div>
 
-      {/* Date Picker Modal */}
-      {showDateModal && (
-        <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-xl space-y-4">
-            <h3 className="text-lg font-semibold text-blue-700">
-              Add Date Filter
-            </h3>
-            <select
-              className="border p-2 rounded-lg w-full"
-              value={dateType}
-              onChange={(e) =>
-                setDateType(e.target.value as "before" | "after" | "at")
-              }
-            >
-              <option value="before">Before</option>
-              <option value="after">After</option>
-              <option value="at">At</option>
-            </select>
-            <input
-              type="date"
-              className="border p-2 rounded-lg w-full"
-              value={dateValue}
-              onChange={(e) => setDateValue(e.target.value)}
-            />
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={() => setShowDateModal(false)}
-                className="px-4 py-2 rounded-lg border hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={addDateFilter}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Add Filter
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <style>{`
+        .fade-in {
+          animation: fadeIn 0.15s ease-in-out;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };
