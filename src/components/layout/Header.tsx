@@ -1,6 +1,9 @@
 import React from "react";
+import { useUser } from "../../context/UserContext";
 
 const Header: React.FC = () => {
+  const { user } = useUser();
+
   return (
     <header className="bg-charcoal text-soft-gray p-4 flex items-center justify-between w-full">
       <div className="flex items-center">
@@ -14,12 +17,16 @@ const Header: React.FC = () => {
         <h1 className="text-xl font-bold">HR Feedback Admin Panel</h1>
       </div>
       <div className="flex items-center">
-        <span className="mr-4">Ahmed</span>
-        <img
-          src="https://via.placeholder.com/40"
-          alt="User"
-          className="h-8 w-8 rounded-full"
-        />
+        {user && (
+          <>
+            <span className="mr-4">{user.name}</span>
+            <img
+              src={user.picture}
+              alt={user.name}
+              className="h-8 w-8 rounded-full"
+            />
+          </>
+        )}
       </div>
     </header>
   );
