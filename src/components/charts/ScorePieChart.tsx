@@ -9,7 +9,7 @@ const ScorePieChart: React.FC = () => {
   }, {} as Record<number, number>);
 
   const chartData = Object.keys(scoreCounts).map((score) => ({
-    name: `${score} star${+score > 1 && "s"}`,
+    name: `${score} star${+score > 1 ? "s" : ""}`,
     value: scoreCounts[parseInt(score)],
   }));
 
