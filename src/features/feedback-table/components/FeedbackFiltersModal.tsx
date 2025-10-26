@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import Select, { type MultiValue } from "react-select";
-import { type Filter, type DateFilterMode } from "../types";
+import { type DateFilterMode } from "../types";
 import Modal from "../../../components/ui/Modal";
 import { ACCENT_COLOR } from "../constants";
 

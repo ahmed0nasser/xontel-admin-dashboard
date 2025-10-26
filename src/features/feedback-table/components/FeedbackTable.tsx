@@ -1,5 +1,10 @@
 import React from "react";
 import { type Feedback } from "../types";
+import { LuCalendarDays } from "react-icons/lu";
+import { FaRegUser } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa6";
+import { FaRegNoteSticky } from "react-icons/fa6";
+
 import { ACCENT_COLOR } from "../constants";
 
 interface FeedbackTableProps {
@@ -12,10 +17,30 @@ const FeedbackTable: React.FC<FeedbackTableProps> = ({ feedbacks }) => {
       <table className="min-w-full text-left border-collapse table-fixed">
         <thead style={{ backgroundColor: `${ACCENT_COLOR}22` }}>
           <tr>
-            <th className="p-3 w-[20%]">Date</th>
-            <th className="p-3 w-[25%]">Employee</th>
-            <th className="p-3 w-[10%]">Score</th>
-            <th className="p-3 w-[45%]">Notes</th>
+            <th className="p-3 w-[20%]">
+              <span className="flex items-center space-x-1">
+                <LuCalendarDays />
+                <span>Date</span>
+              </span>
+            </th>
+            <th className="p-3 w-[25%]">
+              <span className="flex items-center space-x-1">
+                <FaRegUser />
+                <span>Employee</span>
+              </span>
+            </th>
+            <th className="p-3 w-[10%]">
+              <span className="flex items-center space-x-1">
+                <FaRegStar />
+                <span>Score</span>
+              </span>
+            </th>
+            <th className="p-3 w-[45%]">
+              <span className="flex items-center space-x-1">
+                <FaRegNoteSticky />
+                <span>Notes</span>
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>

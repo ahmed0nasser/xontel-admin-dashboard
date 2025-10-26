@@ -6,6 +6,7 @@ import FeedbackPagination from "./FeedbackPagination";
 import { type Feedback } from "../types";
 import "../styles.css";
 import { ACCENT_COLOR } from "../constants";
+import { FaFilter } from "react-icons/fa";
 
 interface FeedbackTableContainerProps {
   feedbacks: Feedback[];
@@ -49,9 +50,9 @@ const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
               let color = ACCENT_COLOR;
 
               if (filter.type === "date") {
-                label = `${filter.mode[0].toUpperCase() + filter.mode.slice(
-                  1
-                )} ${filter.value.date.toISOString().split("T")[0]}`;
+                label = `${
+                  filter.mode[0].toUpperCase() + filter.mode.slice(1)
+                } ${filter.value.date.toISOString().split("T")[0]}`;
                 color = "#60a5fa";
               } else if (filter.type === "employee") {
                 label = filter.value;
@@ -97,10 +98,9 @@ const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
           )}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 border rounded-md"
-            style={{ borderColor: ACCENT_COLOR }}
+            className="px-4 py-2 text-2xl text-gray-600/70 hover:text-brand-blue duration-300 rounded-md cursor-pointer"
           >
-            Filters
+            <FaFilter />
           </button>
         </div>
       </div>
