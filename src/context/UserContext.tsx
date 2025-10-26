@@ -1,4 +1,9 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  type ReactNode,
+} from "react";
 
 interface User {
   name: string;
@@ -16,8 +21,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>({
-    name: "Ahmed",
-    picture: "https://xsgames.co/randomusers/avatar.php?g=pixel",
+    name: "Ahmed Nasser Rajab",
+    picture: "/male-person-picture.jpg",
   });
 
   return (
@@ -27,6 +32,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
