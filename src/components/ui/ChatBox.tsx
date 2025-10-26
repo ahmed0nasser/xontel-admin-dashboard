@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { messageData, type Message } from '../../data/messages';
-import { type Employee } from '../../data/employees';
-import { useUser } from '../../context/UserContext';
+import React, { useState, useEffect, useRef } from "react";
+import { messageData, type Message } from "../../data/messages";
+import { type Employee } from "../../data/employees";
+import { useUser } from "../../context/UserContext";
 
 interface ChatBoxProps {
   employee: Employee | null;
@@ -15,14 +15,17 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
   useEffect(() => {
     if (employee) {
-      setMessages(messageData.filter(message => message.employeeId === employee.id));
+      setMessages(
+        messageData.filter((message) => message.employeeId === employee.id)
+      );
     }
   }, [employee]);
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
     }
   }, [messageInput]);
 
@@ -41,26 +44,45 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
   if (!employee) {
     return (
-      <div className="bg-soft-gray p-4 rounded-lg shadow flex items-center justify-center h-full text-charcoal">
-        <p className="text-charcoal">Select an employee to start chatting</p>
+      <div className="bg-soft-gray p-4 rounded-lg flex items-center justify-center h-full text-charcoal">
+        <p>Select an employee to start chatting</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-soft-gray p-4 rounded-lg shadow flex flex-col h-full text-charcoal">
-      <h2 className="text-lg font-bold mb-2">Chat with {employee.name}</h2>
-      <div className="flex-grow border border-gray-300 rounded-lg p-4 mb-4 overflow-y-auto">
+    <div className="h-full bg-soft-gray flex flex-col text-charcoal">
+      <h2 className="text-lg font-bold mb-2 pl-2">Chat with {employee.name}</h2>
+      <div className="grow border border-gray-300 rounded-lg p-4 overflow-y-auto min-h-0">
         {messages.map((message: Message) => (
-          <div key={message.id} className={`flex items-end ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
-            {message.sender === 'employee' && employee && (
-              <img src={employee.picture} alt={employee.name} className="h-8 w-8 rounded-full mr-2" />
+          <div
+            key={message.id}
+            className={`flex items-end ${
+              message.sender === "user" ? "justify-end" : "justify-start"
+            } mb-2`}
+          >
+            {message.sender === "employee" && employee && (
+              <img
+                src={employee.picture}
+                alt={employee.name}
+                className="h-8 w-8 rounded-full mr-2"
+              />
             )}
-            <div className={`p-2 rounded-lg ${message.sender === 'user' ? 'bg-brand-blue text-white' : 'bg-light-blue'}`}>
+            <div
+              className={`p-2 rounded-lg max-w-[75%] wrap-break-word whitespace-pre-wrap ${
+                message.sender === "user"
+                  ? "bg-brand-blue text-white"
+                  : "bg-light-blue"
+              }`}
+            >
               {message.text}
             </div>
-            {message.sender === 'user' && user && (
-              <img src={user.picture} alt={user.name} className="h-8 w-8 rounded-full ml-2" />
+            {message.sender === "user" && user && (
+              <img
+                src={user.picture}
+                alt={user.name}
+                className="h-8 w-8 rounded-full ml-2"
+              />
             )}
           </div>
         ))}
@@ -69,18 +91,24 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
         <textarea
           ref={textareaRef}
           rows={1}
-          className="flex-grow border border-gray-300 rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-brand-blue resize-none"
-          placeholder="Type a message..."
+          className="min-h-11 grow border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none resize-none overflow-y-auto wrap-break-word"
+          placeholder="Write a message"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           onKeyPress={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault(); // Prevent new line on Enter
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
               handleSendMessage();
             }
           }}
         />
-        <button onClick={handleSendMessage} className="bg-brand-blue text-white px-4 py-2 rounded-r-lg font-bold cursor-pointer hover:bg-complementary-orange transition-colors duration-200">Send</button>
+
+        <button
+          onClick={handleSendMessage}
+          className="bg-brand-blue text-white px-4 py-2 rounded-r-lg font-semibold cursor-pointer hover:bg-brand-blue/80 transition-colors duration-300"
+        >
+          Send
+        </button>
       </div>
     </div>
   );
