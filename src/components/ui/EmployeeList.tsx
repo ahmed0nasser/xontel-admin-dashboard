@@ -39,8 +39,8 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
             key={employee.id}
             className={`flex items-center p-3 border-b border-zinc-400/50 cursor-pointer transition-colors duration-300 ${
               selectedEmployee?.id === employee.id
-                ? "bg-zinc-300"
-                : "hover:bg-zinc-300/70"
+                ? "bg-gray-300"
+                : "hover:bg-gray-300/70"
             }`}
             onClick={() => onSelectEmployee(employee)}
           >
