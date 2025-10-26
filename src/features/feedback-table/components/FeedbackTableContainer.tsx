@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFeedbackData } from "../hooks/useFeedbackData";
 import FeedbackFilters from "./FeedbackFilters";
 import FeedbackTable from "./FeedbackTable";
 import FeedbackPagination from "./FeedbackPagination";
 import { type Feedback } from "../types";
+import "../styles.css";
 
 interface FeedbackTableContainerProps {
   feedbacks: Feedback[];
-  accentColor?: string;
 }
 
 const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
   feedbacks,
-  accentColor = "#007bff",
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const {
     filters,
     setFilters,
@@ -26,6 +26,8 @@ const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
     setSelectedEmployees,
     selectedScores,
     setSelectedScores,
+    noteKeywords,
+    setNoteKeywords,
     handleNoteKeyPress,
     handleApplyFilters,
     handleResetFilters,
@@ -38,6 +40,8 @@ const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
   return (
     <div className="p-4">
       <FeedbackFilters
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
         filters={filters}
         setFilters={setFilters}
         dateMode={dateMode}
@@ -49,26 +53,18 @@ const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
         setSelectedEmployees={setSelectedEmployees}
         selectedScores={selectedScores}
         setSelectedScores={setSelectedScores}
+        noteKeywords={noteKeywords}
+        setNoteKeywords={setNoteKeywords}
         handleNoteKeyPress={handleNoteKeyPress}
         handleApplyFilters={handleApplyFilters}
         handleResetFilters={handleResetFilters}
-        accentColor={accentColor}
       />
-      <FeedbackTable feedbacks={filteredFeedback} accentColor={accentColor} />
+      <FeedbackTable feedbacks={filteredFeedback} />
       <FeedbackPagination
         currentPage={currentPage}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
       />
-      <style>{`
-        .fade-in {
-          animation: fadeIn 0.15s ease-in-out;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-4px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };
