@@ -9,11 +9,14 @@ const Chat: React.FC = () => {
   );
 
   return (
-    <div className="p-4 flex h-full bg-soft-gray">
-      <div className="w-1/3 mr-4">
-        <EmployeeList onSelectEmployee={setSelectedEmployee} selectedEmployee={selectedEmployee} />
+    <div className="py-4 flex h-full bg-soft-gray">
+      <div className="w-1/4">
+        <EmployeeList
+          onSelectEmployee={setSelectedEmployee}
+          selectedEmployee={selectedEmployee}
+        />
       </div>
-      <div className="w-2/3">
+      <div className="w-full">
         <ChatBox employee={selectedEmployee} />
       </div>
     </div>

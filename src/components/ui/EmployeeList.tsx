@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { employeeData, type Employee } from "../../data/employees";
+import { CiSearch } from "react-icons/ci";
 
 interface EmployeeListProps {
   onSelectEmployee: (employee: Employee) => void;
   selectedEmployee: Employee | null;
 }
 
-const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedEmployee }) => {
+const EmployeeList: React.FC<EmployeeListProps> = ({
+  onSelectEmployee,
+  selectedEmployee,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredEmployees = employeeData.filter(
@@ -16,26 +20,38 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedE
   );
 
   return (
-    <div className="bg-soft-gray p-4 rounded-lg shadow text-charcoal h-full overflow-y-auto">
-      <h2 className="text-lg font-bold mb-4">Employees</h2>
-      <input
-        type="text"
-        placeholder="Search employees..."
-        className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <div className="grid gap-4">
+    <div className="bg-soft-gray text-charcoal h-full overflow-y-auto">
+      <div className="w-full flex items-center mb-2">
+        <span className="text-2xl">
+          <CiSearch />
+        </span>
+        <input
+          type="text"
+          placeholder="Search"
+          className="p-2 w-full rounded-md focus:outline-none focus:shadow-md"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+      <div>
         {filteredEmployees.map((employee: Employee) => (
           <div
             key={employee.id}
-            className={`flex items-center p-3 rounded-lg shadow-md cursor-pointer transition-colors duration-200 ${selectedEmployee?.id === employee.id ? 'bg-brand-blue text-white' : 'hover:bg-light-blue'}`}
+            className={`flex items-center p-3 border-b border-zinc-400/50 cursor-pointer transition-colors duration-300 ${
+              selectedEmployee?.id === employee.id
+                ? "bg-zinc-300"
+                : "hover:bg-zinc-300/70"
+            }`}
             onClick={() => onSelectEmployee(employee)}
           >
-            <img src={employee.picture} alt={employee.name} className="h-10 w-10 rounded-full mr-3" />
+            <img
+              src={employee.picture}
+              alt={employee.name}
+              className="h-12 w-12 rounded-full mr-3"
+            />
             <div>
               <p className="font-semibold">{employee.name}</p>
-              <p className="text-sm text-gray-600">{employee.title}</p>
+              <p className="text-sm text-zinc-600">{employee.title}</p>
             </div>
           </div>
         ))}
