@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap');
 @import "tailwindcss";
+
 @theme {
+    --font-sans: "TikTok Sans";
     --color-brand-blue: #0082CA;
     --color-light-blue: #4DB8E9;
     --color-complementary-orange: #CA4800;
@@ -7,3 +10,4 @@
     --color-charcoal: #1E1E1E;
     --color-warm-yellow: #FFC857;
 }
+
