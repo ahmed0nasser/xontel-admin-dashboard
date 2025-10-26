@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { messageData, type Message } from "../../data/messages";
 import { type Employee } from "../../data/employees";
 import { useUser } from "../../context/UserContext";
+import { IoMdChatboxes } from "react-icons/io";
+import { BsFillSendFill } from "react-icons/bs";
 
 interface ChatBoxProps {
   employee: Employee | null;
@@ -44,16 +46,21 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
   if (!employee) {
     return (
-      <div className="bg-soft-gray p-4 rounded-lg flex items-center justify-center h-full text-charcoal">
-        <p>Select an employee to start chatting</p>
+      <div className=" p-4 flex flex-col justify-center items-center h-full">
+        <div className="text-gray-600/40 text-[20rem]">
+          <IoMdChatboxes />
+        </div>
+        <p className="text-gray-600 text-xl">
+          Select an employee to start chatting...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="h-full bg-soft-gray flex flex-col text-charcoal">
+    <div className="h-full border-l border-gray-300 flex flex-col text-charcoal">
       <h2 className="text-lg font-bold mb-2 pl-2">Chat with {employee.name}</h2>
-      <div className="grow border border-gray-300 rounded-lg p-4 overflow-y-auto min-h-0">
+      <div className="grow p-4 overflow-y-auto">
         {messages.map((message: Message) => (
           <div
             key={message.id}
@@ -72,7 +79,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
               className={`p-2 rounded-lg max-w-[75%] wrap-break-word whitespace-pre-wrap ${
                 message.sender === "user"
                   ? "bg-brand-blue text-white"
-                  : "bg-light-blue"
+                  : "bg-gray-300/70"
               }`}
             >
               {message.text}
@@ -87,11 +94,11 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
           </div>
         ))}
       </div>
-      <div className="flex">
+      <div className="mx-4 p-1 border border-gray-300 bg-slate-200/90 items-end rounded-3xl flex space-x-2">
         <textarea
           ref={textareaRef}
           rows={1}
-          className="min-h-11 grow border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none resize-none overflow-y-auto wrap-break-word"
+          className="min-h-10 max-h-30 w-full px-4 py-2 focus:outline-none resize-none overflow-y-auto wrap-break-word"
           placeholder="Write a message"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
@@ -105,9 +112,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
         <button
           onClick={handleSendMessage}
-          className="bg-brand-blue text-white px-4 py-2 rounded-r-lg font-semibold cursor-pointer hover:bg-brand-blue/80 transition-colors duration-300"
+          className="flex items-center space-x-2 h-fit bg-brand-blue text-white px-4 py-2 rounded-3xl font-semibold cursor-pointer hover:bg-brand-blue/80 transition-colors duration-300"
         >
-          Send
+          <span>Send</span>
+          <BsFillSendFill />
         </button>
       </div>
     </div>
