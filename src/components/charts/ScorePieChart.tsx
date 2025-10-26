@@ -14,10 +14,6 @@ const ScorePieChart: React.FC = () => {
   }));
 
   const option = {
-    title: {
-      text: "KPI Score Distribution",
-      left: "center",
-    },
     tooltip: {
       trigger: "item",
     },
