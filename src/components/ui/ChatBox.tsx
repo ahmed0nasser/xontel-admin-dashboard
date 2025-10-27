@@ -58,9 +58,9 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
   }
 
   return (
-    <div className="h-full border-l border-gray-300 flex flex-col text-charcoal">
+    <div className="h-full border-l border-gray-300/70 flex flex-col text-charcoal">
       <h2 className="text-lg font-bold mb-2 pl-2">Chat with {employee.name}</h2>
-      <div className="grow p-4 overflow-y-auto">
+      <div className="grow p-8 overflow-y-auto max-h-[78vh]">
         {messages.map((message: Message) => (
           <div
             key={message.id}
@@ -94,7 +94,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
           </div>
         ))}
       </div>
-      <div className="mx-4 p-1 border border-gray-300 bg-slate-200/90 items-end rounded-3xl flex space-x-2">
+      <div className="m-4 p-1 border border-gray-300 bg-slate-200/90 items-end rounded-3xl flex space-x-2">
         <textarea
           ref={textareaRef}
           rows={1}
