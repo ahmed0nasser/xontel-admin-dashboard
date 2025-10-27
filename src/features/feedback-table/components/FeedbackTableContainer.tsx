@@ -6,7 +6,9 @@ import FeedbackPagination from "./FeedbackPagination";
 import { type Feedback } from "../types";
 import "../styles.css";
 import { ACCENT_COLOR } from "../constants";
-import { FaFilter } from "react-icons/fa";
+import { LuSettings2 } from "react-icons/lu";
+import { RxReset } from "react-icons/rx";
+import Tooltip from "../../../components/ui/Tooltip";
 
 interface FeedbackTableContainerProps {
   feedbacks: Feedback[];
@@ -87,21 +89,25 @@ const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
             })}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-4 px-4 ">
           {filters.length > 0 && (
-            <button
-              onClick={handleResetFilters}
-              className="px-4 py-2 rounded-md text-white bg-red-500"
-            >
-              Reset
-            </button>
+            <Tooltip text="Reset Filters">
+              <button
+                onClick={handleResetFilters}
+                className="-mb-2 text-3xl text-red-500 hover:text-red-700 cursor-pointer duration-300"
+              >
+                <RxReset />
+              </button>
+            </Tooltip>
           )}
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 text-2xl text-gray-600/70 hover:text-brand-blue duration-300 rounded-md cursor-pointer"
-          >
-            <FaFilter />
-          </button>
+          <Tooltip text="Filter Feedbacks">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="-mb-2 text-3xl text-gray-600/70 hover:text-brand-blue cursor-pointer duration-300"
+            >
+              <LuSettings2 />
+            </button>
+          </Tooltip>
         </div>
       </div>
       <FeedbackFiltersModal
