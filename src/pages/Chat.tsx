@@ -9,7 +9,7 @@ const Chat: React.FC = () => {
   );
 
   return (
-    <div className="py-4 flex h-full bg-soft-gray">
+    <div className="px-4 pt-4 flex h-full">
       <div className="w-1/4">
         <EmployeeList
           onSelectEmployee={setSelectedEmployee}

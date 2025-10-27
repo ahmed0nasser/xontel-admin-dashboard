@@ -19,12 +19,12 @@ function App() {
   };
 
   return (
-    <div className="bg-soft-gray h-screen flex flex-col">
+    <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-1 relative">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <main
-          className={`flex-1 p-4 overflow-y-auto transition-all duration-300 ease-in-out`}
+          className={`flex-1 overflow-y-auto transition-all duration-300 ease-in-out`}
         >
           <Outlet />
         </main>
