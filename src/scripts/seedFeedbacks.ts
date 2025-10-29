@@ -5,7 +5,7 @@ import { feedbackData } from "../data/feedback";
 const seedFeedbacks = async () => {
   try {
     for (const feedback of feedbackData) {
-      await addDoc(collection(db, "feedback"), feedback);
+      await addDoc(collection(db, "feedbacks"), feedback);
     }
     console.log("Feedbacks seeded successfully!");
     // @ts-expect-error correct node process exit
