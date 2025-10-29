@@ -37,11 +37,11 @@ const FeedbackTableContainer: React.FC = () => {
     handleNoteKeyPress,
     handleApplyFilters,
     handleResetFilters,
-    filteredFeedback,
+    filteredFeedbacks,
   } = useFeedbackFilters(feedbacks);
 
   const { currentPage, setCurrentPage, totalPages, paginatedFeedback } =
-    useFeedbackPagination(filteredFeedback);
+    useFeedbackPagination(filteredFeedbacks);
 
   return (
     <div className="p-4">
@@ -80,7 +80,39 @@ const FeedbackTableContainer: React.FC = () => {
                   {label}
                   <button
                     onClick={() =>
-                      setFilters(filters.filter((_, i) => i !== idx))
+                      setFilters(
+                        filters.filter((removedFilter, i) => {
+                          if (i !== idx) return true;
+
+                          switch (removedFilter.type) {
+                            case "date":
+                              setDateValue("");
+                              setDateMode("before");
+                              break;
+                            case "employee":
+                              setSelectedEmployees(
+                                selectedEmployees.filter(
+                                  (employee) => employee != removedFilter.value
+                                )
+                              );
+                              break;
+                            case "score":
+                              setSelectedScores(
+                                selectedScores.filter(
+                                  (score) => score != +removedFilter.value
+                                )
+                              );
+                              break;
+                            case "notes":
+                              setNoteKeywords(
+                                noteKeywords.filter(
+                                  (note) => !note.includes(removedFilter.value)
+                                )
+                              );
+                          }
+                          return false;
+                        })
+                      )
                     }
                     className="ml-1 text-white hover:text-gray-200"
                   >

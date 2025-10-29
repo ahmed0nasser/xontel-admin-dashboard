@@ -4,7 +4,7 @@ import { type Filter, type DateFilterMode } from "../types";
 
 export const useFeedbackFilters = (feedbacks: Feedback[]) => {
   const [filters, setFilters] = useState<Filter[]>([]);
-  const [dateMode, setDateMode] = useState<DateFilterMode>("at");
+  const [dateMode, setDateMode] = useState<DateFilterMode>("before");
   const [dateValue, setDateValue] = useState<string>("");
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [selectedScores, setSelectedScores] = useState<number[]>([]);
@@ -60,39 +60,35 @@ export const useFeedbackFilters = (feedbacks: Feedback[]) => {
     }
   };
 
-  const filteredFeedback = useMemo(() => {
+  const filteredFeedbacks = useMemo(() => {
     let result = [...feedbacks];
 
     if (filters.length > 0) {
-      result = result.filter((f) => {
-        return filters.every((filter) => {
-          switch (filter.type) {
-            case "date": {
-              const fd = new Date(f.date);
-              const fv = filter.value.date;
-              if (filter.mode === "before") return fd < fv;
-              if (filter.mode === "after") return fd > fv;
-              return fd.toDateString() === fv.toDateString();
-            }
-            case "employee":
-              return selectedEmployees.length === 0
-                ? true
-                : selectedEmployees.includes(f.employeeName);
-            case "score":
-              return selectedScores.length === 0
-                ? true
-                : selectedScores.includes(f.score);
-            case "notes":
-              return f.notes.toLowerCase().includes(filter.value.toLowerCase());
-            default:
-              return true;
-          }
-        });
+      result = result.filter((feedback) => {
+        let dateFilter = dateValue === "";
+        const fd = feedback.date;
+        const fv = new Date(dateValue);
+        switch (dateMode) {
+          case "before":
+            dateFilter ||= fd < fv;
+            break;
+          case "after":
+            dateFilter ||= fd > fv;
+            break;
+          case "at":
+            dateFilter ||= fd === fv;
+        }
+        const employeeFilter = selectedEmployees.length <= 0 || selectedEmployees.includes(feedback.employeeName);
+        const scoreFilter = selectedScores.length <= 0 || selectedScores.includes(feedback.score);
+        const notesFilter = noteKeywords.length <= 0 || feedback.notes.toLowerCase().split(" ").some(word => noteKeywords.join("|").toLowerCase().split("|").includes(word));
+
+        return dateFilter && notesFilter && employeeFilter && scoreFilter;
       });
     }
 
     return result;
-  }, [feedbacks, filters, selectedEmployees, selectedScores]);
+  }, [filters, feedbacks, dateValue, dateMode, selectedEmployees, selectedScores, noteKeywords]);
+
 
   return {
     filters,
@@ -111,6 +107,6 @@ export const useFeedbackFilters = (feedbacks: Feedback[]) => {
     handleApplyFilters,
     handleResetFilters,
     handleNoteKeyPress,
-    filteredFeedback,
+    filteredFeedbacks
   };
 };
