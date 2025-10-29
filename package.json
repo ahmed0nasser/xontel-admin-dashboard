@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seed-feedbacks": "tsx src/scripts/seedFeedbacks"
+    "seed-feedbacks": "TS_NODE_PROJECT=\"./tsconfig.node.json\" tsx src/scripts/seedFeedbacks"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
