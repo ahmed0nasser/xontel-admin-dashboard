@@ -86,24 +86,9 @@ export const useFeedbackData = (feedbacks: Feedback[]) => {
     return result;
   }, [feedbacks, filters, selectedEmployees, selectedScores]);
 
-  const paginatedFeedback = useMemo(() => {
-    const indexOfLast = currentPage * itemsPerPage;
-    const indexOfFirst = indexOfLast - itemsPerPage;
-    let currentItems = filteredFeedback.slice(indexOfFirst, indexOfLast);
-
-    if (currentItems.length < itemsPerPage) {
-      const diff = itemsPerPage - currentItems.length;
-      const emptyRows = Array(diff).fill({
-        id: "",
-        date: new Date(),
-        employeeName: "",
-        score: 0,
-        notes: "",
-      });
-      currentItems = [...currentItems, ...emptyRows];
-    }
-    return currentItems;
-  }, [filteredFeedback, currentPage]);
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const paginatedFeedback = filteredFeedback.slice(indexOfFirst, indexOfLast);
 
   const totalPages = Math.ceil(filteredFeedback.length / itemsPerPage);
 
