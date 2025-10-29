@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { type Feedback, type Filter, type DateFilterMode } from "../types";
+import { type Feedback } from "../../../types";
+import { type Filter, type DateFilterMode } from "../types";
 
 export const useFeedbackData = (feedbacks: Feedback[]) => {
   const [filters, setFilters] = useState<Filter[]>([]);
@@ -93,8 +94,8 @@ export const useFeedbackData = (feedbacks: Feedback[]) => {
     if (currentItems.length < itemsPerPage) {
       const diff = itemsPerPage - currentItems.length;
       const emptyRows = Array(diff).fill({
-        id: -1,
-        date: "",
+        id: "",
+        date: new Date(),
         employeeName: "",
         score: 0,
         notes: "",

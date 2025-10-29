@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFeedbackData } from "../hooks/useFeedbackData";
 import FeedbackFiltersModal from "./FeedbackFiltersModal";
 import FeedbackTable from "./FeedbackTable";
 import FeedbackPagination from "./FeedbackPagination";
-import { type Feedback } from "../types";
+import { type Feedback } from "../../../types";
 import "../styles.css";
 import { ACCENT_COLOR } from "../constants";
 import { LuSettings2 } from "react-icons/lu";
 import { RxReset } from "react-icons/rx";
 import Tooltip from "../../../components/ui/Tooltip";
+import { subscribeToFeedbacks } from "../../../services/firebase";
 
-interface FeedbackTableContainerProps {
-  feedbacks: Feedback[];
-}
+const FeedbackTableContainer: React.FC = () => {
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
 
-const FeedbackTableContainer: React.FC<FeedbackTableContainerProps> = ({
-  feedbacks,
-}) => {
+  useEffect(() => {
+    const unsubscribe = subscribeToFeedbacks(setFeedbacks);
+    return () => unsubscribe();
+  }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const {
     filters,

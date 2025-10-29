@@ -1,5 +1,5 @@
 import React from "react";
-import { type Feedback } from "../types";
+import { type Feedback } from "../../../types";
 import { LuCalendarDays } from "react-icons/lu";
 import { FaRegUser } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa6";

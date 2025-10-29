@@ -1,24 +1,32 @@
-import React from "react";
-import { feedbackData } from "../../data/feedback";
+import React, { useState, useEffect } from "react";
+import { subscribeToFeedbacks } from "../../services/firebase";
+import { type Feedback } from "../../types";
 
 const FeedbackSummary: React.FC = () => {
-  const totalFeedbacks = feedbackData.length;
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToFeedbacks(setFeedbacks);
+    return () => unsubscribe();
+  }, []);
+
+  const totalFeedbacks = feedbacks.length;
 
   const now = Date.now();
   const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
   const fourteenDaysAgo = now - 14 * 24 * 60 * 60 * 1000;
 
-  const thisWeekFeedbacks = feedbackData.filter(
-    (feedback) => feedback.date > sevenDaysAgo
+  const thisWeekFeedbacks = feedbacks.filter(
+    (feedback) => feedback.date.getTime() > sevenDaysAgo
   );
-  const lastWeekFeedbacks = feedbackData.filter(
+  const lastWeekFeedbacks = feedbacks.filter(
     (feedback) =>
-      feedback.date >= fourteenDaysAgo && feedback.date < sevenDaysAgo
+      feedback.date.getTime() >= fourteenDaysAgo && feedback.date.getTime() < sevenDaysAgo
   );
 
   const recentFeedbacksCount = thisWeekFeedbacks.length;
 
-  const totalScore = feedbackData.reduce(
+  const totalScore = feedbacks.reduce(
     (acc, feedback) => acc + feedback.score,
     0
   );

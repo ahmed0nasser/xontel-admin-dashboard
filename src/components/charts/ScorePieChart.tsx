@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactECharts from "echarts-for-react";
-import { feedbackData } from "../../data/feedback";
+import { subscribeToFeedbacks } from "../../services/firebase";
+import { type Feedback } from "../../types";
 
 const ScorePieChart: React.FC = () => {
-  const scoreCounts = feedbackData.reduce((acc, feedback) => {
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToFeedbacks(setFeedbacks);
+    return () => unsubscribe();
+  }, []);
+
+  const scoreCounts = feedbacks.reduce((acc, feedback) => {
     acc[feedback.score] = (acc[feedback.score] || 0) + 1;
     return acc;
   }, {} as Record<number, number>);
