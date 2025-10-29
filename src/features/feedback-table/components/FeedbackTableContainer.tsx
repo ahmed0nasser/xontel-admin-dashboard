@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useFeedbackData } from "../hooks/useFeedbackData";
+import { useFeedbackFilters } from "../hooks/useFeedbackFilters";
+import { useFeedbackPagination } from "../hooks/useFeedbackPagination";
 import FeedbackFiltersModal from "./FeedbackFiltersModal";
 import FeedbackTable from "./FeedbackTable";
 import FeedbackPagination from "./FeedbackPagination";
@@ -37,10 +38,10 @@ const FeedbackTableContainer: React.FC = () => {
     handleApplyFilters,
     handleResetFilters,
     filteredFeedback,
-    currentPage,
-    totalPages,
-    setCurrentPage,
-  } = useFeedbackData(feedbacks);
+  } = useFeedbackFilters(feedbacks);
+
+  const { currentPage, setCurrentPage, totalPages, paginatedFeedback } =
+    useFeedbackPagination(filteredFeedback);
 
   return (
     <div className="p-4">
@@ -128,7 +129,7 @@ const FeedbackTableContainer: React.FC = () => {
         handleNoteKeyPress={handleNoteKeyPress}
         handleApplyFilters={handleApplyFilters}
       />
-      <FeedbackTable feedbacks={filteredFeedback} />
+      <FeedbackTable feedbacks={paginatedFeedback} />
       <FeedbackPagination
         currentPage={currentPage}
         totalPages={totalPages}

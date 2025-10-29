@@ -2,15 +2,13 @@ import { useState, useMemo } from "react";
 import { type Feedback } from "../../../types";
 import { type Filter, type DateFilterMode } from "../types";
 
-export const useFeedbackData = (feedbacks: Feedback[]) => {
+export const useFeedbackFilters = (feedbacks: Feedback[]) => {
   const [filters, setFilters] = useState<Filter[]>([]);
   const [dateMode, setDateMode] = useState<DateFilterMode>("at");
   const [dateValue, setDateValue] = useState<string>("");
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [selectedScores, setSelectedScores] = useState<number[]>([]);
   const [noteKeywords, setNoteKeywords] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
   const employeeNames = useMemo(
     () => Array.from(new Set(feedbacks.map((f) => f.employeeName))),
@@ -52,6 +50,16 @@ export const useFeedbackData = (feedbacks: Feedback[]) => {
     setDateMode("before");
   };
 
+  const handleNoteKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const target = e.target as HTMLInputElement | null;
+      if (target && target.value.trim()) {
+        setNoteKeywords((prev) => [...prev, target.value.trim()]);
+      }
+    }
+  };
+
   const filteredFeedback = useMemo(() => {
     let result = [...feedbacks];
 
@@ -86,23 +94,6 @@ export const useFeedbackData = (feedbacks: Feedback[]) => {
     return result;
   }, [feedbacks, filters, selectedEmployees, selectedScores]);
 
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const paginatedFeedback = filteredFeedback.slice(indexOfFirst, indexOfLast);
-
-  const totalPages = Math.ceil(filteredFeedback.length / itemsPerPage);
-
-  const handleNoteKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const target = e.target as HTMLInputElement | null;
-      if (target && target.value.trim()) {
-        setNoteKeywords((prev) => [...prev, target.value.trim()]);
-        target.value = "";
-      }
-    }
-  };
-
   return {
     filters,
     setFilters,
@@ -117,13 +108,9 @@ export const useFeedbackData = (feedbacks: Feedback[]) => {
     setSelectedScores,
     noteKeywords,
     setNoteKeywords,
-    currentPage,
-    setCurrentPage,
-    itemsPerPage,
     handleApplyFilters,
     handleResetFilters,
     handleNoteKeyPress,
-    filteredFeedback: paginatedFeedback,
-    totalPages,
+    filteredFeedback,
   };
 };
