@@ -1,8 +1,8 @@
 import React from "react";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 
 const Header: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useAuth();
 
   return (
     <header className="shadow-md p-4 flex items-center justify-between w-full">
@@ -24,11 +24,11 @@ const Header: React.FC = () => {
         {user && (
           <>
             <span className="mr-4 font-semibold text-stone-700">
-              {user.name}
+              {user.firstName} {user.lastName}
             </span>
             <img
-              src={user.picture}
-              alt={user.name}
+              src={user.profilePictureUrl}
+              alt={`${user.firstName} ${user.lastName}`}
               className="h-8 w-8 rounded-full"
             />
           </>

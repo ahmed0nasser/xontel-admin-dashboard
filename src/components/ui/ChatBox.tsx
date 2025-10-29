@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { messageData, type Message } from "../../data/messages";
 import { type Employee } from "../../data/employees";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { IoMdChatboxes } from "react-icons/io";
 import { BsFillSendFill } from "react-icons/bs";
 
@@ -10,7 +10,7 @@ interface ChatBoxProps {
 }
 
 const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -86,8 +86,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
             </div>
             {message.sender === "user" && user && (
               <img
-                src={user.picture}
-                alt={user.name}
+                src={user.profilePictureUrl}
+                alt={`${user.firstName} ${user.lastName}`}
                 className="h-8 w-8 rounded-full ml-2"
               />
             )}
