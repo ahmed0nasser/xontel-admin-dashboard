@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { messageData, type Message } from "../../data/messages";
-import { type Employee } from "../../data/employees";
+import { conversationsData } from "../../data/conversations";
+import { type Employee, type Message } from "../../types";
 import { useAuth } from "../../context/AuthContext";
 import { IoMdChatboxes } from "react-icons/io";
 import { BsFillSendFill } from "react-icons/bs";
@@ -17,9 +17,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
   useEffect(() => {
     if (employee) {
-      setMessages(
-        messageData.filter((message) => message.employeeId === employee.id)
-      );
+      const conversation = conversationsData.find((c) => c.id === employee.id);
+      setMessages(conversation ? conversation.messages : []);
+    } else {
+      setMessages([]);
     }
   }, [employee]);
 
@@ -34,13 +35,16 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
   const handleSendMessage = () => {
     if (messageInput.trim() && employee && user) {
       const newMessage: Message = {
-        id: Date.now(), // Simple unique ID
-        employeeId: employee.id,
+        id: new Date().toISOString(),
+        senderId: user.id,
         text: messageInput,
-        sender: "user",
+        isRead: false,
+        timestamp: new Date(),
       };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessageInput("");
+      // Note: In a real application, you would also update the main
+      // conversationsData object and persist the changes.
     }
   };
 
@@ -59,32 +63,36 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
   return (
     <div className="h-full border-l border-gray-300/70 flex flex-col text-charcoal">
-      <h2 className="text-lg font-bold mb-2 pl-2">Chat with {employee.name}</h2>
+      <h2 className="text-lg font-bold mb-2 pl-2">
+        Chat with {`${employee.firstName} ${employee.lastName}`}
+      </h2>
       <div className="grow p-8 overflow-y-auto max-h-[78vh]">
         {messages.map((message: Message) => (
           <div
             key={message.id}
             className={`flex items-end ${
-              message.sender === "user" ? "justify-end" : "justify-start"
+              user && message.senderId === user.id
+                ? "justify-end"
+                : "justify-start"
             } mb-2`}
           >
-            {message.sender === "employee" && employee && (
+            {user && message.senderId !== user.id && employee && (
               <img
-                src={employee.picture}
-                alt={employee.name}
+                src={employee.profilePictureUrl}
+                alt={`${employee.firstName} ${employee.lastName}`}
                 className="h-8 w-8 rounded-full mr-2"
               />
             )}
             <div
               className={`p-2 rounded-lg max-w-[75%] wrap-break-word whitespace-pre-wrap ${
-                message.sender === "user"
+                user && message.senderId === user.id
                   ? "bg-brand-blue text-white"
                   : "bg-gray-300/70"
               }`}
             >
               {message.text}
             </div>
-            {message.sender === "user" && user && (
+            {user && message.senderId === user.id && (
               <img
                 src={user.profilePictureUrl}
                 alt={`${user.firstName} ${user.lastName}`}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EmployeeList from "../components/ui/EmployeeList";
 import ChatBox from "../components/ui/ChatBox";
-import { type Employee } from "../data/employees";
+import type { Employee } from "../types";
 
 const Chat: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(

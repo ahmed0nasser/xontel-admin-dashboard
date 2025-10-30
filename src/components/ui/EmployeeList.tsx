@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { employeeData, type Employee } from "../../data/employees";
+import { employeeData } from "../../data/employees";
+import { type Employee } from "../../types";
 import { CiSearch } from "react-icons/ci";
 
 interface EmployeeListProps {
@@ -15,7 +16,9 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
 
   const filteredEmployees = employeeData.filter(
     (employee) =>
-      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${employee.firstName} ${employee.lastName}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       employee.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -48,12 +51,12 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
             onClick={() => onSelectEmployee(employee)}
           >
             <img
-              src={employee.picture}
-              alt={employee.name}
+              src={employee.profilePictureUrl}
+              alt={`${employee.firstName} ${employee.lastName}`}
               className="h-12 w-12 rounded-full mr-3"
             />
             <div>
-              <p className="font-semibold">{employee.name}</p>
+              <p className="font-semibold">{`${employee.firstName} ${employee.lastName}`}</p>
               <p className="text-sm text-zinc-600">{employee.title}</p>
             </div>
           </div>

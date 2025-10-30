@@ -25,3 +25,11 @@ export interface Feedback {
   score: number;
   notes: string;
 }
+
+export interface Conversation {
+  id:string;
+  participantNames: [string, string];
+  lastMessage: string;
+  lastMessageTimestamp: Date;
+  messages: Message[];
+}

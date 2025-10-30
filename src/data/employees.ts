@@ -1,39 +1,59 @@
-export interface Employee {
-  id: number;
-  name: string;
-  title: string;
-  picture: string;
-}
+import { type Employee } from "../types";
 
 export const employeeData: Employee[] = [
   {
-    id: 1,
-    name: "John Doe",
+    id: "1",
+    username: "johndoe",
+    firstName: "John",
+    lastName: "Doe",
     title: "Software Engineer",
-    picture: "/male-person-picture.jpg",
+    profilePictureUrl: "/male-person-picture.jpg",
+    role: "employee",
+    joinedDate: new Date("2023-01-15"),
+    createdAt: new Date("2023-01-15"),
   },
   {
-    id: 2,
-    name: "Jane Smith",
+    id: "2",
+    username: "janesmith",
+    firstName: "Jane",
+    lastName: "Smith",
     title: "HR Manager",
-    picture: "/male-person-picture.jpg",
+    profilePictureUrl: "/male-person-picture.jpg",
+    role: "hr",
+    joinedDate: new Date("2022-11-20"),
+    createdAt: new Date("2022-11-20"),
   },
   {
-    id: 3,
-    name: "Peter Jones",
+    id: "3",
+    username: "peterjones",
+    firstName: "Peter",
+    lastName: "Jones",
     title: "Product Manager",
-    picture: "/male-person-picture.jpg",
+    profilePictureUrl: "/male-person-picture.jpg",
+    role: "employee",
+    joinedDate: new Date("2023-03-10"),
+    createdAt: new Date("2023-03-10"),
   },
   {
-    id: 4,
-    name: "Mary Johnson",
+    id: "4",
+    username: "maryjohnson",
+    firstName: "Mary",
+    lastName: "Johnson",
     title: "UX Designer",
-    picture: "/male-person-picture.jpg",
+    profilePictureUrl: "/male-person-picture.jpg",
+    role: "employee",
+    joinedDate: new Date("2023-05-05"),
+    createdAt: new Date("2023-05-05"),
   },
   {
-    id: 5,
-    name: "David Williams",
+    id: "5",
+    username: "davidwilliams",
+    firstName: "David",
+    lastName: "Williams",
     title: "Marketing Specialist",
-    picture: "/male-person-picture.jpg",
+    profilePictureUrl: "/male-person-picture.jpg",
+    role: "employee",
+    joinedDate: new Date("2023-02-28"),
+    createdAt: new Date("2023-02-28"),
   },
 ];
