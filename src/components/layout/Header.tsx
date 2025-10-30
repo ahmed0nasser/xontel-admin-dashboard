@@ -11,25 +11,25 @@ const Header: React.FC = () => {
           <img
             src="/src/assets/xontel-logo.png"
             alt="Logo"
-            className="w-24 mr-2"
+            className="w-18 lg:w-24 mr-2"
           />
         </a>
       </div>
-      <div className="text-center">
-        <h1 className="text-zinc-800 text-2xl font-bold">
+      <div className="hidden lg:block text-center">
+        <h1 className="text-zinc-800 lg:text-xl xl:text-2xl font-bold">
           HR Feedback Admin Panel
         </h1>
       </div>
       <div className="flex items-center">
         {user && (
           <>
-            <span className="mr-4 font-semibold text-stone-700">
+            <span className="text-sm mr-2 lg:text-base lg:mr-4 font-semibold text-stone-700">
               {user.firstName} {user.lastName}
             </span>
             <img
               src={user.profilePictureUrl}
               alt={`${user.firstName} ${user.lastName}`}
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 lg:h-10 lg:w-10 rounded-full"
             />
           </>
         )}
