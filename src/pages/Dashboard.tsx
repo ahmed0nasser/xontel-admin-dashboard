@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
           <ScorePieChart />
         </div>
       </div>
-      <div className="-mt-4 md:mt-4 lg:mt-0 w-full">
+      <div className="-mt-4 md:mt-4 lg:-mt-8 w-full">
         <FeedbackTable />
       </div>
     </div>
