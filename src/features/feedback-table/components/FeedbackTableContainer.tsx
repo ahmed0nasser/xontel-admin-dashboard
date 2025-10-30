@@ -47,7 +47,7 @@ const FeedbackTableContainer: React.FC = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold">Feedback Table</h2>
+          <h2 className="lg:text-lg font-bold">Feedback Table</h2>
           <div className="flex flex-wrap gap-2">
             {filters.map((filter, idx) => {
               let label = "";
@@ -137,7 +137,7 @@ const FeedbackTableContainer: React.FC = () => {
           <Tooltip text="Filter Feedback">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="-mb-2 text-3xl text-gray-600/70 hover:text-brand-blue cursor-pointer duration-300"
+              className="-mb-2 text-2xl lg:text-3xl text-gray-600/70 hover:text-brand-blue cursor-pointer duration-300"
             >
               <LuSettings2 />
             </button>

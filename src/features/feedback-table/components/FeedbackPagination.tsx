@@ -54,7 +54,7 @@ const FeedbackPagination: React.FC<FeedbackPaginationProps> = ({
         <button
           key={i}
           onClick={() => typeof page === "number" && handlePageChange(page)}
-          className={`px-3 py-1 rounded-lg text-sm font-medium transform transition-all duration-200
+          className={`px-3 py-1 rounded-lg text-xs lg:text-sm font-medium transform transition-all duration-200
             ${
               page === currentPage
                 ? "bg-brand-blue/90 text-white shadow-md scale-105"

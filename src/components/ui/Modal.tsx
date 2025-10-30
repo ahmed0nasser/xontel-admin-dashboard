@@ -20,7 +20,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 className="text-xl font-bold">{title}</h2>
+          <h2 className="text-lg lg:text-xl font-bold">{title}</h2>
           <button onClick={onClose} className="text-2xl hover:text-gray-600">
             &times;
           </button>

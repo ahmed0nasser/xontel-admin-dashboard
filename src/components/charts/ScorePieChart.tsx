@@ -3,12 +3,25 @@ import ReactECharts from "echarts-for-react";
 import { subscribeToFeedback } from "../../services/firebase";
 import { type Feedback } from "../../types";
 
+const windowWidthBreakpoint = 1024;
+
 const ScorePieChart: React.FC = () => {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth < windowWidthBreakpoint
+  );
 
   useEffect(() => {
     const unsubscribe = subscribeToFeedback(setFeedback);
     return () => unsubscribe();
+  }, []);
+
+  // Update responsiveness on resize
+  useEffect(() => {
+    const handleResize = () =>
+      setIsMobile(window.innerWidth < windowWidthBreakpoint);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const scoreCounts = feedback.reduce((acc, feedback) => {
@@ -31,49 +44,53 @@ const ScorePieChart: React.FC = () => {
   };
 
   const option = {
-    title: {
-      text: "KPI Score Distribution",
-      top: 100,
-      left: 20,
-      textStyle: {
-        color: "black",
-        fontFamily: "TikTok Sans",
-        fontSize: "1.125rem",
-        fontWeight: "bold",
-      },
-    },
     tooltip: {
       trigger: "item",
       formatter: "{b}: {c} ({d}%)",
     },
     legend: {
-      orient: "vertical",
-      right: 300,
-      top: "center",
+      orient: isMobile ? "horizontal" : "vertical",
+      bottom: isMobile ? 10 : "center",
+      left: isMobile ? "center" : "right",
       itemGap: 8,
     },
     series: [
       {
         name: "Feedback Score",
         type: "pie",
-        radius: "45%",
-        center: ["38%", "50%"],
+        radius: isMobile ? "55%" : "45%",
+        center: isMobile ? ["50%", "55%"] : ["38%", "50%"],
         data: chartData.map((item) => ({
           ...item,
-          itemStyle: { color: colorMap[parseInt(item.name)] },
+          itemStyle: {
+            color: colorMap[parseInt(item.name)],
+          },
         })),
+        label: {
+          show: !isMobile, // hide labels on small screens for clarity
+        },
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
-            shadowColor: "rgba(0, 0, 0, 0.5)",
+            shadowColor: "rgba(0, 0, 0, 0.4)",
           },
         },
       },
     ],
   };
 
-  return <ReactECharts option={option} style={{ height: "400px" }} />;
+  return (
+    <div className="w-full">
+      <ReactECharts
+        option={option}
+        style={{
+          height: isMobile ? "360px" : "400px",
+          width: "100%",
+        }}
+      />
+    </div>
+  );
 };
 
 export default ScorePieChart;

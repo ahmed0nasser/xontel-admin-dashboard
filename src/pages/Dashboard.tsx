@@ -5,17 +5,20 @@ import FeedbackSummary from "../components/ui/FeedbackSummary";
 
 const Dashboard: React.FC = () => {
   return (
-    <div className="px-12">
-      <div className="flex flex-col lg:flex-row justify-center items-center w-full gap-8">
-        <div className="w-full lg:w-1/3">
-          <h2 className="text-lg font-bold mb-4">Summary</h2>
+    <div className="lg:px-8">
+      <div className="px-4 flex flex-col xl:flex-row justify-center w-full lg:gap-8">
+        <div className="mt-10 lg:mt-24 w-full xl:w-1/3">
+          <h2 className="lg:text-lg font-bold mb-4">Summary</h2>
           <FeedbackSummary />
         </div>
-        <div className="mt-10 w-full lg:w-2/3">
+        <div className="mt-10 lg:mt-24 w-full xl:w-2/3">
+          <h2 className="lg:text-lg font-bold -mb-20 ">
+            KPI Score Distribution
+          </h2>
           <ScorePieChart />
         </div>
       </div>
-      <div className="w-full">
+      <div className="-mt-4 w-full">
         <FeedbackTable />
       </div>
     </div>

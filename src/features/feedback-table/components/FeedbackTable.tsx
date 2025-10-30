@@ -14,7 +14,7 @@ interface FeedbackTableProps {
 const FeedbackTable: React.FC<FeedbackTableProps> = ({ feedback }) => {
   return (
     <div
-      className="overflow-x-auto border rounded-lg"
+      className="text-sm lg:text-base overflow-x-auto border rounded-md"
       style={{ minHeight: "336px" }}
     >
       <table className="min-w-full text-left border-collapse table-fixed">

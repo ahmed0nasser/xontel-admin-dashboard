@@ -46,12 +46,10 @@ const FeedbackSummary: React.FC = () => {
       : 0;
 
   // Popularity change (unique employees)
-  const thisWeekEmployees = new Set(
-    thisWeekFeedback.map((f) => f.employeeName)
-  ).size;
-  const lastWeekEmployees = new Set(
-    lastWeekFeedback.map((f) => f.employeeName)
-  ).size;
+  const thisWeekEmployees = new Set(thisWeekFeedback.map((f) => f.employeeName))
+    .size;
+  const lastWeekEmployees = new Set(lastWeekFeedback.map((f) => f.employeeName))
+    .size;
 
   const popularityChange =
     lastWeekEmployees > 0
@@ -66,38 +64,44 @@ const FeedbackSummary: React.FC = () => {
     <div className="h-full">
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="text-center">
-          <p className="text-2xl font-bold">{totalFeedback}</p>
-          <p className="text-sm text-gray-500">Total Feedback</p>
+          <p className="text-lg lg:text-2xl font-bold">{totalFeedback}</p>
+          <p className="text-xs lg:text-sm text-gray-500">Total Feedback</p>
         </div>
         <div className="text-center">
-          <p className="text-2xl font-bold">{recentFeedbackCount}</p>
-          <p className="text-sm text-gray-500">Recent Feedback (7d)</p>
+          <p className="text-lg lg:text-2xl font-bold">{recentFeedbackCount}</p>
+          <p className="text-xs lg:text-sm text-gray-500">
+            Recent Feedback (7d)
+          </p>
         </div>
         <div className="text-center">
-          <p className="text-2xl font-bold">{averageScore}</p>
-          <p className="text-sm text-gray-500">Average Score</p>
+          <p className="text-lg lg:text-2xl font-bold">{averageScore}</p>
+          <p className="text-xs lg:text-sm text-gray-500">Average Score</p>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4 border-t border-gray-300 pt-4">
         <div className="text-center">
           <p
-            className={`text-2xl font-bold ${
+            className={`text-lg lg:text-2xl font-bold ${
               feedbackChange >= 0 ? "text-green-500" : "text-red-500"
             }`}
           >
             {feedbackChange >= 0 ? `+${feedbackChange}` : feedbackChange}%
           </p>
-          <p className="text-sm text-gray-500">Feedbacks Change (last 7d)</p>
+          <p className="text-xs lg:text-sm text-gray-500">
+            Feedbacks Change (last 7d)
+          </p>
         </div>
         <div className="text-center">
           <p
-            className={`text-2xl font-bold ${
+            className={`text-lg lg:text-2xl font-bold ${
               popularityChange >= 0 ? "text-green-500" : "text-red-500"
             }`}
           >
             {popularityChange >= 0 ? `+${popularityChange}` : popularityChange}%
           </p>
-          <p className="text-sm text-gray-500">Popularity Change (last 7d)</p>
+          <p className="text-xs lg:text-sm text-gray-500">
+            Popularity Change (last 7d)
+          </p>
         </div>
       </div>
     </div>
