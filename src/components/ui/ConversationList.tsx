@@ -19,7 +19,7 @@ interface ConversationWithDetails extends Conversation {
   unreadCount: number;
 }
 
-const EmployeeList: React.FC<ConversationListProps> = ({
+const ConversationList: React.FC<ConversationListProps> = ({
   onSelectEmployee,
   selectedEmployee,
 }) => {
@@ -125,4 +125,4 @@ const EmployeeList: React.FC<ConversationListProps> = ({
   );
 };
 
-export default EmployeeList;
+export default ConversationList;
