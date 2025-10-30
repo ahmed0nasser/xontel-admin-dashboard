@@ -69,9 +69,9 @@ const ConversationList: React.FC<ConversationListProps> = ({
   );
 
   return (
-    <div className="text-charcoal h-full overflow-y-auto">
-      <div className="w-full px-2">
-        <div className="px-2 w-full flex items-center mb-4 rounded-3xl bg-slate-200/90 border border-gray-300 hover:border-gray-400 duration-300">
+    <div className="h-full overflow-y-auto">
+      <div className="w-full px-4 lg:px-2">
+        <div className="px-2 w-full flex items-center mb-4 rounded-3xl border border-gray-300 bg-gray-200 hover:border-gray-400 duration-300">
           <span className="text-2xl">
             <CiSearch />
           </span>

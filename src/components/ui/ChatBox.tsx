@@ -5,12 +5,14 @@ import { IoMdChatboxes } from "react-icons/io";
 import { BsFillSendFill } from "react-icons/bs";
 import { subscribeToMessages, sendMessage } from "../../services/firebase";
 import { formatMessageTime } from "../../utils/formatters";
+import { IoIosArrowBack } from "react-icons/io";
 
 interface ChatBoxProps {
   employee: Employee | null;
+  onGoBack: () => void;
 }
 
-const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({ employee, onGoBack }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
@@ -47,7 +49,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
   const handleSendMessage = () => {
     if (messageInput.trim() && employee && user) {
-      sendMessage(employee.id, messageInput, user.id);
+      sendMessage(employee.id, messageInput.trim(), user.id);
       setMessageInput("");
     }
   };
@@ -66,11 +68,16 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
   }
 
   return (
-    <div className="h-full border-l border-gray-300/70 flex flex-col text-charcoal">
-      <h2 className="text-lg font-bold mb-2 pl-2">
-        Chat with {`${employee.firstName} ${employee.lastName}`}
-      </h2>
-      <div className="grow p-8 overflow-y-auto max-h-[78vh]">
+    <div className="bg-slate-200/90 h-full max-h-[89vh] sm:max-h-full lg:border-l border-gray-300/70 flex flex-col">
+      <div className="flex items-center bg-white border-b border-gray-300/70">
+        <button onClick={onGoBack} className="text-xl lg:hidden p-2">
+          <IoIosArrowBack />
+        </button>
+        <h2 className="text-lg font-bold mb-2 pl-4">
+          Chat with {`${employee.firstName} ${employee.lastName}`}
+        </h2>
+      </div>
+      <div className="grow p-8 overflow-y-auto">
         {messages.map((message: Message) => (
           <div
             key={message.id}
@@ -78,7 +85,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
               user && message.senderId === user.id
                 ? "justify-end"
                 : "justify-start"
-            } mb-2`}
+            } mb-4`}
           >
             {user && message.senderId !== user.id && employee && (
               <img
@@ -94,7 +101,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
                   : "bg-gray-300/70"
               }`}
             >
-              <p className="whitespace-pre-wrap wrap-break-word">
+              <p className="text-sm md:text-base whitespace-pre-wrap wrap-break-word">
                 {message.text}
               </p>
               <p
@@ -118,11 +125,11 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="m-4 p-1 border border-gray-300 bg-slate-200/90 items-end rounded-3xl flex space-x-2">
+      <div className="m-4 p-1 border border-gray-300 bg-gray-200 items-end rounded-3xl flex space-x-2">
         <textarea
           ref={textareaRef}
           rows={1}
-          className="min-h-10 max-h-30 w-full px-4 py-2 focus:outline-none resize-none overflow-y-auto wrap-break-word"
+          className="min-h-8 lg:min-h-10 max-h-30 w-full px-4 py-2 focus:outline-none resize-none overflow-y-auto wrap-break-word text-sm md:text-base placeholder:text-sm md:placeholder:text-base"
           placeholder="Write a message"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
@@ -136,9 +143,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
         <button
           onClick={handleSendMessage}
-          className="flex items-center space-x-2 h-fit bg-brand-blue text-white px-4 py-2 rounded-3xl font-semibold cursor-pointer hover:bg-brand-blue/80 transition-colors duration-300"
+          className={`text-xl md:text-2xl lg:text-base flex items-center space-x-2 h-fit text-white px-2 lg:px-4 py-2 rounded-3xl font-semibold cursor-pointer transition-colors duration-300
+            ${
+              messageInput
+                ? "hover:bg-brand-blue/80 bg-brand-blue"
+                : "bg-zinc-400/50"
+            } `}
         >
-          <span>Send</span>
+          <span className="hidden lg:block">Send</span>
           <BsFillSendFill />
         </button>
       </div>
