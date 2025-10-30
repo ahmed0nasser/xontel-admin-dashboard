@@ -49,7 +49,7 @@ const FeedbackFiltersModal: React.FC<FeedbackFiltersModalProps> = ({
     <Modal
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}
-      title="Filter Feedbacks"
+      title="Filter Feedback"
     >
       <div className="flex flex-col gap-4">
         {/* Date Filter */}

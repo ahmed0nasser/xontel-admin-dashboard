@@ -166,17 +166,17 @@ export const subscribeToUnreadCount = (
   return () => {};
 };
 
-export const subscribeToFeedbacks = (
-  onFeedbacksUpdate: (feedbacks: Feedback[]) => void
+export const subscribeToFeedback = (
+  onFeedbackUpdate: (feedback: Feedback[]) => void
 ): (() => void) => {
-  const feedbacksRef = collection(db, 'feedbacks');
-  const q = query(feedbacksRef, orderBy('date', 'desc'));
+  const feedbackRef = collection(db, 'feedback');
+  const q = query(feedbackRef, orderBy('date', 'desc'));
 
   return onSnapshot(q, (querySnapshot) => {
-    const feedbacks: Feedback[] = [];
+    const newFeedback: Feedback[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      feedbacks.push({
+      newFeedback.push({
         id: doc.id,
         date: data.date.toDate(),
         employeeName: data.employeeName,
@@ -184,6 +184,6 @@ export const subscribeToFeedbacks = (
         notes: data.notes,
       });
     });
-    onFeedbacksUpdate(feedbacks);
+    onFeedbackUpdate(newFeedback);
   });
 };

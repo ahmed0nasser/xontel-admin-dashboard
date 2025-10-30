@@ -8,10 +8,10 @@ import { FaRegNoteSticky } from "react-icons/fa6";
 import { ACCENT_COLOR } from "../constants";
 
 interface FeedbackTableProps {
-  feedbacks: Feedback[];
+  feedback: Feedback[];
 }
 
-const FeedbackTable: React.FC<FeedbackTableProps> = ({ feedbacks }) => {
+const FeedbackTable: React.FC<FeedbackTableProps> = ({ feedback }) => {
   return (
     <div
       className="overflow-x-auto border rounded-lg"
@@ -47,7 +47,7 @@ const FeedbackTable: React.FC<FeedbackTableProps> = ({ feedbacks }) => {
           </tr>
         </thead>
         <tbody>
-          {feedbacks.map((f, index) => (
+          {feedback.map((f, index) => (
             <tr key={+f.id !== -1 ? f.id : `empty-${index}`} className="h-14">
               <td className="p-3 border-t truncate">
                 {f.date ? new Date(f.date).toISOString().split("T")[0] : ""}

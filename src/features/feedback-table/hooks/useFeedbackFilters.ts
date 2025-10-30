@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { type Feedback } from "../../../types";
 import { type Filter, type DateFilterMode } from "../types";
 
-export const useFeedbackFilters = (feedbacks: Feedback[]) => {
+export const useFeedbackFilters = (feedback: Feedback[]) => {
   const [filters, setFilters] = useState<Filter[]>([]);
   const [dateMode, setDateMode] = useState<DateFilterMode>("before");
   const [dateValue, setDateValue] = useState<string>("");
@@ -11,8 +11,8 @@ export const useFeedbackFilters = (feedbacks: Feedback[]) => {
   const [noteKeywords, setNoteKeywords] = useState<string[]>([]);
 
   const employeeNames = useMemo(
-    () => Array.from(new Set(feedbacks.map((f) => f.employeeName))),
-    [feedbacks]
+    () => Array.from(new Set(feedback.map((f) => f.employeeName))),
+    [feedback]
   );
 
   const handleApplyFilters = () => {
@@ -60,8 +60,8 @@ export const useFeedbackFilters = (feedbacks: Feedback[]) => {
     }
   };
 
-  const filteredFeedbacks = useMemo(() => {
-    let result = [...feedbacks];
+  const filteredFeedback = useMemo(() => {
+    let result = [...feedback];
 
     if (filters.length > 0) {
       result = result.filter((feedback) => {
@@ -87,7 +87,7 @@ export const useFeedbackFilters = (feedbacks: Feedback[]) => {
     }
 
     return result;
-  }, [filters, feedbacks, dateValue, dateMode, selectedEmployees, selectedScores, noteKeywords]);
+  }, [filters, feedback, dateValue, dateMode, selectedEmployees, selectedScores, noteKeywords]);
 
 
   return {
@@ -107,6 +107,6 @@ export const useFeedbackFilters = (feedbacks: Feedback[]) => {
     handleApplyFilters,
     handleResetFilters,
     handleNoteKeyPress,
-    filteredFeedbacks
+    filteredFeedback
   };
 };

@@ -10,13 +10,13 @@ import { ACCENT_COLOR } from "../constants";
 import { LuSettings2 } from "react-icons/lu";
 import { RxReset } from "react-icons/rx";
 import Tooltip from "../../../components/ui/Tooltip";
-import { subscribeToFeedbacks } from "../../../services/firebase";
+import { subscribeToFeedback } from "../../../services/firebase";
 
 const FeedbackTableContainer: React.FC = () => {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
 
   useEffect(() => {
-    const unsubscribe = subscribeToFeedbacks(setFeedbacks);
+    const unsubscribe = subscribeToFeedback(setFeedback);
     return () => unsubscribe();
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,11 +37,11 @@ const FeedbackTableContainer: React.FC = () => {
     handleNoteKeyPress,
     handleApplyFilters,
     handleResetFilters,
-    filteredFeedbacks,
-  } = useFeedbackFilters(feedbacks);
+    filteredFeedback,
+  } = useFeedbackFilters(feedback);
 
   const { currentPage, setCurrentPage, totalPages, paginatedFeedback } =
-    useFeedbackPagination(filteredFeedbacks);
+    useFeedbackPagination(filteredFeedback);
 
   return (
     <div className="p-4">
@@ -134,7 +134,7 @@ const FeedbackTableContainer: React.FC = () => {
               </button>
             </Tooltip>
           )}
-          <Tooltip text="Filter Feedbacks">
+          <Tooltip text="Filter Feedback">
             <button
               onClick={() => setIsModalOpen(true)}
               className="-mb-2 text-3xl text-gray-600/70 hover:text-brand-blue cursor-pointer duration-300"
@@ -161,7 +161,7 @@ const FeedbackTableContainer: React.FC = () => {
         handleNoteKeyPress={handleNoteKeyPress}
         handleApplyFilters={handleApplyFilters}
       />
-      <FeedbackTable feedbacks={paginatedFeedback} />
+      <FeedbackTable feedback={paginatedFeedback} />
       <FeedbackPagination
         currentPage={currentPage}
         totalPages={totalPages}
