@@ -8,9 +8,10 @@ import UnreadBadge from "../ui/UnreadBadge";
 interface SidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
+  isDesktop: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, isDesktop }) => {
   const { pathname } = useLocation();
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
@@ -34,14 +35,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const dashboardColor = pathname === "/dashboard" && "text-brand-blue";
   const chatColor = pathname === "/chat" && "text-brand-blue";
 
+  const mobileClasses = `pt-40 fixed top-0 left-0 bg-white z-40 shadow-xl bg-white/90 ${
+    isOpen ? "translate-x-0" : "-translate-x-full"
+  }`;
+
   return (
     <aside
-      className={`text-md font-bold p-2 h-full transition-all duration-300 ease-in-out ${
-        isOpen ? "w-auto" : "w-0 overflow-hidden"
-      }`}
+      className={`${
+        !isDesktop && mobileClasses
+      } h-full ease-in-out duration-300 text-base font-bold lg:p-2`}
     >
       <nav>
-        <ul className="uppercase text-gray-600/70 mt-10 space-y-12">
+        <ul className="uppercase text-gray-600/70 mt-10 space-y-16 lg:space-y-12">
           <li>
             <NavLink
               to="/dashboard"
