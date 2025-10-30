@@ -10,9 +10,10 @@ import {
   Timestamp,
   writeBatch,
   limit,
+  collectionGroup,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import type { Employee, Message, Feedback } from '../types';
+import type { Employee, Message, Feedback, Conversation } from '../types';
 
 export const getUserById = async (userId: string): Promise<Employee> => {
   const userDoc = await getDoc(doc(db, 'employees', userId));
@@ -88,7 +89,8 @@ export const subscribeToMessages = (
 
 export const sendMessage = async (
   conversationId: string,
-  text: string
+  text: string,
+  senderId: string
 ): Promise<void> => {
   const conversationRef = doc(db, 'conversations', conversationId);
   const messagesRef = collection(conversationRef, 'messages');
@@ -105,7 +107,7 @@ export const sendMessage = async (
   );
 
   batch.set(doc(messagesRef), {
-    senderId: conversationId,
+    senderId: senderId,
     text,
     timestamp: Timestamp.now(),
     isRead: false,
@@ -126,7 +128,7 @@ export const markMessagesAsRead = async (
   const hrUser = await getHRUser();
   const q = query(
     messagesRef,
-    where('senderId', '==', hrUser.id),
+    where('senderId', '!=', hrUser.id),
     where('isRead', '==', false)
   );
 
@@ -140,30 +142,28 @@ export const markMessagesAsRead = async (
   await batch.commit();
 };
 
-export const subscribeToUnreadCount = (
+export const subscribeToUnreadCount = async (
   conversationId: string,
   onCountUpdate: (count: number) => void
-): (() => void) => {
+): Promise<() => void> => {
   const messagesRef = collection(
     db,
     'conversations',
     conversationId,
     'messages'
   );
-  
-  getHRUser().then(hrUser => {
-    const q = query(
-      messagesRef,
-      where('senderId', '==', hrUser.id),
-      where('isRead', '==', false)
-    );
+  const hrUser = await getHRUser();
+  const q = query(
+    messagesRef,
+    where('senderId', '!=', hrUser.id),
+    where('isRead', '==', false)
+  );
 
-    return onSnapshot(q, (querySnapshot) => {
-      onCountUpdate(querySnapshot.size);
-    });
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    onCountUpdate(querySnapshot.size);
   });
 
-  return () => {};
+  return unsubscribe;
 };
 
 export const subscribeToFeedback = (
@@ -186,4 +186,44 @@ export const subscribeToFeedback = (
     });
     onFeedbackUpdate(newFeedback);
   });
+};
+
+export const subscribeToConversations = (
+  onConversationsUpdate: (conversations: Conversation[]) => void
+): (() => void) => {
+  const conversationsRef = collection(db, 'conversations');
+  const q = query(conversationsRef, orderBy('lastMessageTimestamp', 'desc'));
+
+  return onSnapshot(q, (querySnapshot) => {
+    const conversations: Conversation[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      conversations.push({
+        id: doc.id,
+        participantNames: data.participantNames,
+        lastMessage: data.lastMessage,
+        lastMessageTimestamp: data.lastMessageTimestamp.toDate(),
+        messages: [], // Messages subcollection is not loaded here
+      });
+    });
+    onConversationsUpdate(conversations);
+  });
+};
+
+export const subscribeToTotalUnreadCount = async (
+  onCountUpdate: (count: number) => void
+): Promise<() => void> => {
+  const hrUser = await getHRUser();
+  const messagesCollectionGroup = collectionGroup(db, 'messages');
+  const q = query(
+    messagesCollectionGroup,
+    where('isRead', '==', false),
+    where('senderId', '!=', hrUser.id)
+  );
+
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    onCountUpdate(querySnapshot.size);
+  });
+
+  return unsubscribe;
 };
