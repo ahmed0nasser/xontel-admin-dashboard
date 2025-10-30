@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { conversationsData } from "../../data/conversations";
 import { type Employee, type Message } from "../../types";
 import { useAuth } from "../../context/AuthContext";
 import { IoMdChatboxes } from "react-icons/io";
 import { BsFillSendFill } from "react-icons/bs";
+import { subscribeToMessages, sendMessage } from "../../services/firebase";
+import { formatMessageTime } from "../../utils/formatters";
 
 interface ChatBoxProps {
   employee: Employee | null;
@@ -14,11 +15,23 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     if (employee) {
-      const conversation = conversationsData.find((c) => c.id === employee.id);
-      setMessages(conversation ? conversation.messages : []);
+      const unsubscribe = subscribeToMessages(employee.id, (newMessages) => {
+        setMessages(newMessages);
+      });
+
+      return () => unsubscribe();
     } else {
       setMessages([]);
     }
@@ -34,17 +47,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
 
   const handleSendMessage = () => {
     if (messageInput.trim() && employee && user) {
-      const newMessage: Message = {
-        id: new Date().toISOString(),
-        senderId: user.id,
-        text: messageInput,
-        isRead: false,
-        timestamp: new Date(),
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      sendMessage(employee.id, messageInput, user.id);
       setMessageInput("");
-      // Note: In a real application, you would also update the main
-      // conversationsData object and persist the changes.
     }
   };
 
@@ -84,13 +88,24 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
               />
             )}
             <div
-              className={`p-2 rounded-lg max-w-[75%] wrap-break-word whitespace-pre-wrap ${
+              className={`p-2 rounded-lg max-w-[75%] wrap-break-word ${
                 user && message.senderId === user.id
                   ? "bg-brand-blue text-white"
                   : "bg-gray-300/70"
               }`}
             >
-              {message.text}
+              <p className="whitespace-pre-wrap wrap-break-word">
+                {message.text}
+              </p>
+              <p
+                className={`text-xs mt-1 text-right ${
+                  user && message.senderId === user.id
+                    ? "text-white/70"
+                    : "text-gray-600/80"
+                }`}
+              >
+                {formatMessageTime(message.timestamp)}
+              </p>
             </div>
             {user && message.senderId === user.id && (
               <img
@@ -101,6 +116,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee }) => {
             )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className="m-4 p-1 border border-gray-300 bg-slate-200/90 items-end rounded-3xl flex space-x-2">
         <textarea
