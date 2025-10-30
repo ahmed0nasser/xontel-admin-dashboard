@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { GrPieChart } from "react-icons/gr";
 import { BiChat } from "react-icons/bi";
+import { subscribeToTotalUnreadCount } from "../../services/firebase";
+import UnreadBadge from "../ui/UnreadBadge";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -10,6 +12,25 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const { pathname } = useLocation();
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const unsubPromise = subscribeToTotalUnreadCount((count) => {
+      setTotalUnreadCount(count);
+    });
+
+    let unsubscribe: () => void;
+    unsubPromise.then((unsub) => {
+      unsubscribe = unsub;
+    });
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
+
   const dashboardColor = pathname === "/dashboard" && "text-brand-blue";
   const chatColor = pathname === "/chat" && "text-brand-blue";
 
@@ -39,8 +60,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               to="/chat"
               className={`block py-2 px-4 rounded duration-300 hover:text-brand-blue ${chatColor}`}
             >
-              <div className="ml-5 text-5xl">
+              <div className="relative ml-5 text-5xl">
                 <BiChat />
+                {totalUnreadCount > 0 && (
+                  <div className="absolute top-0 right-0">
+                    <UnreadBadge count={totalUnreadCount} />
+                  </div>
+                )}
               </div>
               <div className="mt-2 text-xs tracking-widest flex justify-center">
                 Chat
