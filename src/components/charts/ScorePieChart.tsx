@@ -51,7 +51,7 @@ const ScorePieChart: React.FC = () => {
     legend: {
       orient: isMobile ? "horizontal" : "vertical",
       bottom: isMobile ? 10 : "center",
-      left: isMobile ? "center" : "right",
+      right: isMobile ? "center" : 180,
       itemGap: 8,
     },
     series: [
