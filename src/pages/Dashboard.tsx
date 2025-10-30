@@ -1,7 +1,6 @@
 import React from "react";
 import FeedbackTable from "../features/feedback-table";
 import ScorePieChart from "../components/charts/ScorePieChart";
-import { feedbackData } from "../data/feedback";
 import FeedbackSummary from "../components/ui/FeedbackSummary";
 
 const Dashboard: React.FC = () => {
@@ -17,7 +16,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
       <div className="w-full">
-        <FeedbackTable feedbacks={feedbackData} />
+        <FeedbackTable />
       </div>
     </div>
   );
