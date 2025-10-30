@@ -91,7 +91,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee, onGoBack }) => {
               <img
                 src={employee.profilePictureUrl}
                 alt={`${employee.firstName} ${employee.lastName}`}
-                className="h-8 w-8 rounded-full mr-2"
+                className="h-8 w-8 lg:h-10 lg:w-10 rounded-full mr-2"
               />
             )}
             <div
@@ -118,7 +118,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee, onGoBack }) => {
               <img
                 src={user.profilePictureUrl}
                 alt={`${user.firstName} ${user.lastName}`}
-                className="h-8 w-8 rounded-full ml-2"
+                className="h-8 w-8 lg:h-10 lg:w-10 rounded-full ml-2"
               />
             )}
           </div>
