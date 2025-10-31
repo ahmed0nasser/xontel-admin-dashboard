@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Select, { type MultiValue } from "react-select";
 import { type DateFilterMode } from "../types";
+import { FaPlus } from "react-icons/fa";
 import Modal from "../../../components/ui/Modal";
 
 interface FeedbackFiltersModalProps {
@@ -16,8 +17,7 @@ interface FeedbackFiltersModalProps {
   selectedScores: number[];
   setSelectedScores: (scores: number[]) => void;
   noteKeywords: string[];
-  setNoteKeywords: (keywords: string[]) => void;
-  handleNoteKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  setNoteKeywords: React.Dispatch<React.SetStateAction<string[]>>;
   handleApplyFilters: () => void;
 }
 
@@ -35,14 +35,21 @@ const FeedbackFiltersModal: React.FC<FeedbackFiltersModalProps> = ({
   setSelectedScores,
   noteKeywords,
   setNoteKeywords,
-  handleNoteKeyPress,
   handleApplyFilters,
 }) => {
   const dateMenuRef = useRef<HTMLDivElement>(null);
+  const [noteKeyword, setNoteKeyword] = useState<string>("");
 
   const handleApplyAndClose = () => {
     handleApplyFilters();
     setIsModalOpen(false);
+  };
+
+  const handleNewNoteKeyword = () => {
+    if (noteKeyword && noteKeyword.trim()) {
+      setNoteKeywords((prev) => [...prev, noteKeyword.trim()]);
+      setNoteKeyword("");
+    }
   };
 
   return (
@@ -114,12 +121,30 @@ const FeedbackFiltersModal: React.FC<FeedbackFiltersModalProps> = ({
         {/* Notes Filter */}
         <div>
           <label className="font-semibold">Notes Keyword</label>
-          <input
-            type="text"
-            placeholder="Press Enter to add a keyword"
-            onKeyDown={handleNoteKeyPress}
-            className="focus:outline-blue-500 border border-gray-400/50 hover:border-gray-400/80 duration-150 rounded-md px-2 py-2 w-full mt-1"
-          />
+          <div className="mt-1 flex items-center focus:outline-blue-500 border border-gray-400/50 hover:border-gray-400/80 duration-150 rounded-md ">
+            <input
+              type="text"
+              placeholder="Add a keyword"
+              value={noteKeyword}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleNewNoteKeyword();
+                }
+              }}
+              onChange={(e) => setNoteKeyword(e.target.value)}
+              className="focus:outline-none px-2 py-2 w-full"
+            />
+            <button
+              onClick={handleNewNoteKeyword}
+              className={`mx-2 my-2 self-end p-1 text-xl text-white bg-brand-blue rounded-full cursor-pointer duration-300 ${
+                noteKeyword ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <FaPlus />
+            </button>
+          </div>
+
           <div className="flex flex-wrap gap-2 mt-2">
             {noteKeywords.map((keyword, idx) => (
               <div

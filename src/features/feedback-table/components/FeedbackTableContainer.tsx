@@ -34,7 +34,6 @@ const FeedbackTableContainer: React.FC = () => {
     setSelectedScores,
     noteKeywords,
     setNoteKeywords,
-    handleNoteKeyPress,
     handleApplyFilters,
     handleResetFilters,
     filteredFeedback,
@@ -137,7 +136,7 @@ const FeedbackTableContainer: React.FC = () => {
           <Tooltip text="Filter Feedback">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="-mb-2 text-2xl lg:text-3xl text-gray-600/70 hover:text-brand-blue cursor-pointer duration-300"
+              className="text-2xl lg:text-3xl text-gray-600/70 hover:text-brand-blue cursor-pointer duration-300"
             >
               <LuSettings2 />
             </button>
@@ -158,7 +157,6 @@ const FeedbackTableContainer: React.FC = () => {
         setSelectedScores={setSelectedScores}
         noteKeywords={noteKeywords}
         setNoteKeywords={setNoteKeywords}
-        handleNoteKeyPress={handleNoteKeyPress}
         handleApplyFilters={handleApplyFilters}
       />
       <FeedbackTable feedback={paginatedFeedback} />

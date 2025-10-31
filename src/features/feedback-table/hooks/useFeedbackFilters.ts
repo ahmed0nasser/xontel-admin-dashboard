@@ -50,16 +50,6 @@ export const useFeedbackFilters = (feedback: Feedback[]) => {
     setDateMode("before");
   };
 
-  const handleNoteKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const target = e.target as HTMLInputElement | null;
-      if (target && target.value.trim()) {
-        setNoteKeywords((prev) => [...prev, target.value.trim()]);
-      }
-    }
-  };
-
   const filteredFeedback = useMemo(() => {
     let result = [...feedback];
 
@@ -106,7 +96,6 @@ export const useFeedbackFilters = (feedback: Feedback[]) => {
     setNoteKeywords,
     handleApplyFilters,
     handleResetFilters,
-    handleNoteKeyPress,
     filteredFeedback
   };
 };
