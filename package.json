@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seed-feedback": "TS_NODE_PROJECT=\"./tsconfig.node.json\" tsx src/scripts/seedFeedback"
+    "seed-feedback": "TS_NODE_PROJECT=\"./tsconfig.node.json\" tsx --env-file=./.env.local src/scripts/seedFeedback",
+    "seed-employees": "TS_NODE_PROJECT=\"./tsconfig.node.json\" tsx --env-file=./.env.local src/scripts/seedEmployeesAndConversations"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
