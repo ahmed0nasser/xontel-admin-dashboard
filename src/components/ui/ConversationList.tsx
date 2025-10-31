@@ -40,7 +40,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
             const lastMessageSenderFirstName =
               conv.lastMessageSenderId === employee.id
                 ? employee.firstName
-                : (user?.firstName as string);
+                : "You";
             return {
               ...conv,
               employee,
