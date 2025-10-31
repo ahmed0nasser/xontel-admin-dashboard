@@ -8,6 +8,7 @@ import {
 import type { Employee, Conversation } from "../../types";
 import UnreadBadge from "./UnreadBadge";
 import { formatRelativeTime } from "../../utils/formatters";
+import { useAuth } from "../../context/AuthContext";
 
 interface ConversationListProps {
   onSelectEmployee: (employee: Employee) => void;
@@ -17,12 +18,14 @@ interface ConversationListProps {
 interface ConversationWithDetails extends Conversation {
   employee: Employee;
   unreadCount: number;
+  lastMessageSenderFirstName: string;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({
   onSelectEmployee,
   selectedEmployee,
 }) => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [conversations, setConversations] = useState<ConversationWithDetails[]>(
     []
@@ -34,14 +37,23 @@ const ConversationList: React.FC<ConversationListProps> = ({
         await Promise.all(
           newConversations.map(async (conv) => {
             const employee = await getUserById(conv.id);
-            return { ...conv, employee, unreadCount: 0 };
+            const lastMessageSenderFirstName =
+              conv.lastMessageSenderId === employee.id
+                ? employee.firstName
+                : (user?.firstName as string);
+            return {
+              ...conv,
+              employee,
+              unreadCount: 0,
+              lastMessageSenderFirstName,
+            };
           })
         );
       setConversations(conversationsWithDetails);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const unsubscribers: (() => void)[] = [];
@@ -113,7 +125,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
               </div>
               <div className="flex justify-between items-center mt-1">
                 <p className="text-sm text-zinc-600 truncate">
-                  {conv.lastMessage}
+                  {conv.lastMessageSenderFirstName}: {conv.lastMessage}
                 </p>
                 <UnreadBadge count={conv.unreadCount} />
               </div>

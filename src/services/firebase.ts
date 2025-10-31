@@ -71,18 +71,31 @@ export const subscribeToMessages = (
   );
   const q = query(messagesRef, orderBy('timestamp', 'asc'));
 
-  return onSnapshot(q, (querySnapshot) => {
+  return onSnapshot(q, async (querySnapshot) => {
     const messages: Message[] = [];
+    const batch = writeBatch(db);
+    const hrUser = await getHRUser();
+    let performUpdate = false;
+
     querySnapshot.forEach((doc) => {
       const data = doc.data();
+      if (data.senderId !== hrUser.id && !data.isRead) {
+        batch.update(doc.ref, { isRead: true });
+        performUpdate = true;
+      }
       messages.push({
         id: doc.id,
         senderId: data.senderId,
         text: data.text,
         timestamp: data.timestamp.toDate(),
-        isRead: data.isRead,
+        isRead: true, // Visually mark as read immediately
       });
     });
+
+    if (performUpdate) {
+      await batch.commit();
+    }
+
     onMessagesUpdate(messages);
   });
 };
@@ -102,6 +115,7 @@ export const sendMessage = async (
     {
       lastMessage: text,
       lastMessageTimestamp: Timestamp.now(),
+      lastMessageSenderId: senderId,
     },
     { merge: true }
   );
@@ -111,32 +125,6 @@ export const sendMessage = async (
     text,
     timestamp: Timestamp.now(),
     isRead: false,
-  });
-
-  await batch.commit();
-};
-
-export const markMessagesAsRead = async (
-  conversationId: string
-): Promise<void> => {
-  const messagesRef = collection(
-    db,
-    'conversations',
-    conversationId,
-    'messages'
-  );
-  const hrUser = await getHRUser();
-  const q = query(
-    messagesRef,
-    where('senderId', '!=', hrUser.id),
-    where('isRead', '==', false)
-  );
-
-  const querySnapshot = await getDocs(q);
-  const batch = writeBatch(db);
-
-  querySnapshot.forEach((document) => {
-    batch.update(document.ref, { isRead: true });
   });
 
   await batch.commit();
@@ -203,6 +191,7 @@ export const subscribeToConversations = (
         participantNames: data.participantNames,
         lastMessage: data.lastMessage,
         lastMessageTimestamp: data.lastMessageTimestamp.toDate(),
+        lastMessageSenderId: data.lastMessageSenderId || '',
         messages: [], // Messages subcollection is not loaded here
       });
     });
