@@ -2,9 +2,7 @@
 
 This project is an administrative dashboard designed to manage HR feedback and facilitate real-time communication with employees. Built as part of the Xontel Coding Challenge, it provides a comprehensive overview of employee feedback, detailed filtering capabilities, and an interactive chat interface.
 
-## Demo
-
-![demo](/assets/demo/xontel-admin-panel-demo.mp4)
+## [Demo](https://drive.google.com/file/d/16Vi7plwzvmSvM5V5Wy3Ff9E3GMbGsWb8/view?usp=sharing)
 
 ## Features
 
@@ -135,7 +133,7 @@ The optimized production build will be generated in the `dist/` directory.
 
 ## Firebase Firestore DB Schema
 
-![db-schema](/assets/imgs/db-schema.png)
+![db-schema](/assets/db-schema.png)
 
 ## Seeding Data (Optional)
 
