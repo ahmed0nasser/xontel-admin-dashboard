@@ -149,14 +149,14 @@ const FeedbackFiltersModal: React.FC<FeedbackFiltersModalProps> = ({
             {noteKeywords.map((keyword, idx) => (
               <div
                 key={idx}
-                className="flex items-center px-2 py-1 rounded-full text-sm text-white bg-purple-500"
+                className="flex items-center px-2 py-1 rounded-full text-sm bg-gray-300/80"
               >
                 {keyword}
                 <button
                   onClick={() =>
                     setNoteKeywords(noteKeywords.filter((_, i) => i !== idx))
                   }
-                  className="ml-1 text-white hover:text-gray-200"
+                  className="ml-1 text-xs hover:text-red-500"
                 >
                   ✕
                 </button>
