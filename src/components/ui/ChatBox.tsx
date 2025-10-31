@@ -4,8 +4,13 @@ import { useAuth } from "../../context/AuthContext";
 import { IoMdChatboxes } from "react-icons/io";
 import { BsFillSendFill } from "react-icons/bs";
 import { subscribeToMessages, sendMessage } from "../../services/firebase";
-import { formatMessageTime } from "../../utils/formatters";
 import { IoIosArrowBack } from "react-icons/io";
+import DateBadge from "./DateBadge";
+import {
+  formatDateBadge,
+  formatMessageTime,
+  isSameDay,
+} from "../../utils/formatters";
 
 interface ChatBoxProps {
   employee: Employee | null;
@@ -68,7 +73,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee, onGoBack }) => {
   }
 
   return (
-    <div className="bg-slate-200/90 h-full max-h-[89vh] sm:max-h-full lg:border-l border-gray-300/70 flex flex-col">
+    <div className="bg-gray-200/90 h-full sm:max-h-full lg:border-l border-gray-300/70 flex flex-col">
       <div className="flex items-center bg-white border-b border-gray-300/70">
         <button onClick={onGoBack} className="text-xl lg:hidden p-2">
           <IoIosArrowBack />
@@ -77,52 +82,61 @@ const ChatBox: React.FC<ChatBoxProps> = ({ employee, onGoBack }) => {
           Chat with {`${employee.firstName} ${employee.lastName}`}
         </h2>
       </div>
-      <div className="grow p-8 overflow-y-auto">
-        {messages.map((message: Message) => (
-          <div
-            key={message.id}
-            className={`flex items-end ${
-              user && message.senderId === user.id
-                ? "justify-end"
-                : "justify-start"
-            } mb-4`}
-          >
-            {user && message.senderId !== user.id && employee && (
-              <img
-                src={employee.profilePictureUrl}
-                alt={`${employee.firstName} ${employee.lastName}`}
-                className="h-8 w-8 lg:h-10 lg:w-10 rounded-full mr-2"
-              />
-            )}
-            <div
-              className={`p-2 rounded-lg max-w-[75%] wrap-break-word ${
-                user && message.senderId === user.id
-                  ? "bg-brand-blue text-white"
-                  : "bg-gray-300/70"
-              }`}
-            >
-              <p className="text-sm md:text-base whitespace-pre-wrap wrap-break-word">
-                {message.text}
-              </p>
-              <p
-                className={`text-xs mt-1 text-right ${
+      <div className="grow p-8 overflow-y-auto flex max-h-[79vh] flex-col">
+        {messages.map((message: Message, index) => {
+          const previousMessage = messages[index - 1];
+          const showDateBadge =
+            !previousMessage ||
+            !isSameDay(message.timestamp, previousMessage.timestamp);
+
+          return (
+            <React.Fragment key={message.id}>
+              {showDateBadge && (
+                <DateBadge date={formatDateBadge(message.timestamp)} />
+              )}
+              <div
+                className={`flex items-end ${
                   user && message.senderId === user.id
-                    ? "text-white/70"
-                    : "text-gray-600/80"
-                }`}
+                    ? "justify-end"
+                    : "justify-start"
+                } mb-4`}
               >
-                {formatMessageTime(message.timestamp)}
-              </p>
-            </div>
-            {user && message.senderId === user.id && (
-              <img
-                src={user.profilePictureUrl}
-                alt={`${user.firstName} ${user.lastName}`}
-                className="h-8 w-8 lg:h-10 lg:w-10 rounded-full ml-2"
-              />
-            )}
-          </div>
-        ))}
+                {user && message.senderId !== user.id && employee && (
+                  <img
+                    src={employee.profilePictureUrl}
+                    alt={`${employee.firstName} ${employee.lastName}`}
+                    className="h-8 w-8 lg:h-10 lg:w-10 rounded-full mr-2"
+                  />
+                )}
+                <div
+                  className={`p-2 rounded-lg max-w-[75%] wrap-break-word ${
+                    user && message.senderId === user.id
+                      ? "bg-[#cae0fcff]"
+                      : "bg-gray-300/70"
+                  }`}
+                >
+                  <p className="text-sm md:text-base whitespace-pre-wrap wrap-break-word">
+                    {message.text}
+                  </p>
+                  <p
+                    className={`text-xs mt-1 text-right ${
+                      user && "text-gray-600/80"
+                    }`}
+                  >
+                    {formatMessageTime(message.timestamp)}
+                  </p>
+                </div>
+                {user && message.senderId === user.id && (
+                  <img
+                    src={user.profilePictureUrl}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className="h-8 w-8 lg:h-10 lg:w-10 rounded-full ml-2"
+                  />
+                )}
+              </div>
+            </React.Fragment>
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
       <div className="m-4 p-1 border border-gray-300 bg-gray-200 items-end rounded-3xl flex space-x-2">
